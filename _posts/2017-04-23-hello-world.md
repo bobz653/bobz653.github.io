@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      算法技术分享
+title:      技术分享
 category: blog
 description: 整理自己工作之余的一些认识。
 ---
