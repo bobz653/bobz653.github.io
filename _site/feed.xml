@@ -1,22 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Your awesome title</title>
+    <title>探索发现好玩的东西</title>
     <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 05 May 2017 20:32:34 +0800</pubDate>
-    <lastBuildDate>Fri, 05 May 2017 20:32:34 +0800</lastBuildDate>
+    <pubDate>Fri, 05 May 2017 20:54:10 +0800</pubDate>
+    <lastBuildDate>Fri, 05 May 2017 20:54:10 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
     
       <item>
-        <title>Welcome to Jekyll!</title>
-        <description>&lt;p&gt;You’ll find this post in your &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
+        <title>Hello World!</title>
+        <description>&lt;script type=&quot;text/javascript&quot; async=&quot;&quot; src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt; &lt;/script&gt;
 
-&lt;p&gt;To add new posts, simply add a file in the &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory that follows the convention &lt;code class=&quot;highlighter-rouge&quot;&gt;YYYY-MM-DD-name-of-post.ext&lt;/code&gt; and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.&lt;/p&gt;
+&lt;p&gt;formula1: &lt;script type=&quot;math/tex&quot;&gt;n==x&lt;/script&gt;&lt;/p&gt;
 
-&lt;p&gt;Jekyll also offers powerful support for code snippets:&lt;/p&gt;
+&lt;p&gt;formula2: &lt;script type=&quot;math/tex&quot;&gt;n!=x&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;formula3: (m==y)&lt;/p&gt;
+
+&lt;p&gt;formula4: [m!=y]&lt;/p&gt;
+
+&lt;p&gt;formula5: (k==z)&lt;/p&gt;
+
+&lt;p&gt;formula6: [k!=z]&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
   &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Hi, &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
@@ -24,17 +32,20 @@
 &lt;span class=&quot;n&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'Tom'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;c1&quot;&gt;#=&amp;gt; prints 'Hi, Tom' to STDOUT.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Check out the &lt;a href=&quot;http://jekyllrb.com&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/jekyll/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;. If you have questions, you can ask them on &lt;a href=&quot;https://github.com/jekyll/jekyll-help&quot;&gt;Jekyll’s dedicated Help repository&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;markdown-and-i&quot;&gt;Markdown and I&lt;/h2&gt;
 
+&lt;p&gt;&lt;strong&gt;Markdown&lt;/strong&gt; is a plain text formatting syntax created by John Gruber, aiming to provide a easy-to-read and feasible markup. The original Markdown syntax specification can be found &lt;a href=&quot;http://daringfireball.net/projects/markdown/syntax&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;’'’python
+print ‘hello world’
+‘’’&lt;/p&gt;
 </description>
-        <pubDate>Thu, 09 Apr 2015 19:23:32 +0800</pubDate>
-        <link>http://localhost:4000/jekyll/update/2015/04/09/welcome-to-jekyll-copy.html</link>
-        <guid isPermaLink="true">http://localhost:4000/jekyll/update/2015/04/09/welcome-to-jekyll-copy.html</guid>
+        <pubDate>Fri, 05 May 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%9D%82%E8%B0%88/2017/05/05/hello-world.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%9D%82%E8%B0%88/2017/05/05/hello-world.html</guid>
         
         
-        <category>jekyll</category>
-        
-        <category>update</category>
+        <category>杂谈</category>
         
       </item>
     
