@@ -12,10 +12,10 @@ dl, dd, ol, ul, figure {
  */
 body {
   font-family: "Raleway", Arial, sans-serif;
-  font-size: 16px;
+  font-size: 36px;
   line-height: 1.5;
   font-weight: 300;
-  color: #111;
+  color: #860;
   background-color: #fdfdfd;
   -webkit-text-size-adjust: 100%; }
 
@@ -42,7 +42,7 @@ figure > img {
   display: block; }
 
 figcaption {
-  font-size: 14px; }
+  font-size: 31.5px; }
 
 /**
  * Lists
@@ -72,7 +72,7 @@ a {
   a:visited {
     color: #1756a9; }
   a:hover {
-    color: #111;
+    color: #860;
     text-decoration: underline; }
 
 /**
@@ -159,7 +159,7 @@ blockquote {
 body {
   font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;
   font-size: 13px;
-  line-height: 18px;
+  line-height: 15px;
   color: #737373;
   background-color: white; }
 
@@ -289,7 +289,7 @@ html, body {
  * Header
  */
 .header {
-  padding: 50px 20px 40px;
+  padding: 30px 20px 10px;
   background-color: #515865; }
 
 .header-container {

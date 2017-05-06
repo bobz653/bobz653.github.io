@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width initial-scale=1">
 
-  <title>Hello World!</title>
-  <meta name="description" content="">
+  <title>利用Jekyll在Github搭建博客</title>
+  <meta name="description" content="这周末刚好项目不那么忙，抽空利用jekyll在本地上搭建博客，然后推送到自己的Github博客中，对日常中好奇，好玩，复习的知识进行记录，也分享给感兴趣的朋友。">
 
   <link rel="stylesheet" href="/css/main.css">
   <link rel="canonical" href="http://localhost:4000/%E6%9D%82%E8%B0%88/2017/05/05/hello-world.html">
@@ -22,22 +22,22 @@
 		<div class="nav">
 			
 				<li>
-					<a href="/index.html">home</a>
+					<a href="/index.html">首页</a>
 				</li>			
 			
 			
 				<li>
-					<a href="/archive.html">archive</a>
+					<a href="/archive.html">存档</a>
 				</li>			
 			
 			
 				<li>
-					<a href="/category.html">category</a>
+					<a href="/category.html">类别</a>
 				</li>			
 			
 			
 				<li>
-					<a href="/about.html">about</a>
+					<a href="/about.html">关于我</a>
 				</li>			
 			
 		</div>
@@ -54,7 +54,7 @@
 				</a>
 			</li>
 			<li>
-				<a href="https://twitter.com/jekyllrb" title="Twitter">
+				<a href="http://www.weibo.com/bobz653" title="Weibo">
 					<img width="19px" height="19px" src="/images/twitter.png"/>
 				</a>
 			</li>
@@ -68,55 +68,106 @@
         <div class="post">
   <br>
   <header class="post-header">
-    <h1 class="post-title">Hello World!</h1>
-    <p class="post-meta">May 5, 2017</p>
+    <h1 class="post-title">利用Jekyll在Github搭建博客</h1>
+   
+ <p class="post-meta">May 5, 2017 • 张波
+
+
+</p>
+
+
   </header>
 
-  <article class="post-content">
-    <script type="text/javascript" async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+   <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<br/><br/>  
+<article class="post-content">
+    <p>这周末刚好项目不那么忙，抽空利用jekyll在本地上搭建博客，然后推送到自己的<a href="https://bobz653.github.io" title="博客">Github博客</a>中，对日常中好奇，好玩，复习的知识进行记录，也分享给感兴趣的朋友。</p>
 
-<p>formula1: <script type="math/tex">n==x</script></p>
+<h2 id="1环境准备">1.环境准备</h2>
+<p>我是在mac中搭建的，所以其他环境请找相应的安装包。</p>
 
-<p>formula2: <script type="math/tex">n!=x</script></p>
+<blockquote>
+  <p>1.安装Jekyll：使用</p>
+</blockquote>
+<pre>
+gem -v;
+gem update --system;
+sudo gem install jekyll -n /usr/local/Cellar/;
+jekyll -v;
+</pre>
+<p>如果可以正常显示版本信息，说明安装成功。</p>
+<blockquote>
 
-<p>formula3: (m==y)</p>
+  <p>2.github 博客：在<a href="https://github.com">Github</a>注册账户</p>
 
-<p>formula4: [m!=y]</p>
+  <p>新建一个以用户名.github.io为名称的工程即可，这个工程有且仅有一个，是github使用gitpages服务托管的仅支持jekyll这样的静态页面的服务。在本地使用ssh-genkey创建rsa_pub文件，加入到git的ssh pubkey中即可通过</p>
+  <pre>git clone;
+git push origin master
+</pre>
+  <p>等命令在本地博客更新后，来更新线上博客了。</p>
+</blockquote>
 
-<p>formula5: (k==z)</p>
+<h2 id="2搭建博客">2.搭建博客</h2>
+<blockquote>
+  <p>1.合适的模板：在jeklly中有很多免费的模板供大家使用，比如<a href="https://jekyllthemes.io/">Jekyll theme</a>，找到一个就git clone下来吧。</p>
 
-<p>formula6: [k!=z]</p>
+  <p>2.本地运行：</p>
+  <pre>
+jekyll build;
+jekyll server;
+</pre>
+  <p>使用http://127.0.0.1:4000/即可在本地查看。</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">print_hi</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
-  <span class="nb">puts</span> <span class="s2">"Hi, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">"</span>
-<span class="k">end</span>
-<span class="n">print_hi</span><span class="p">(</span><span class="s1">'Tom'</span><span class="p">)</span>
-<span class="c1">#=&gt; prints 'Hi, Tom' to STDOUT.</span></code></pre></figure>
+  <p>3.修改：</p>
 
-<h2 id="markdown-and-i">Markdown and I</h2>
+  <p>文章在_post文件夹中，全局配置在_config.yml中，css在_sass中,布局在_layout中。修改后所有的网站最终文件在_site文件夹中。</p>
 
-<p><strong>Markdown</strong> is a plain text formatting syntax created by John Gruber, aiming to provide a easy-to-read and feasible markup. The original Markdown syntax specification can be found <a href="http://daringfireball.net/projects/markdown/syntax">here</a>.</p>
+  <p>新建的文章都在_post文件夹中，以YYYY-MM-DD-title.md方式存在。且头部是一些模板需要读取的信息，比如作者，类别，标题，标签等信息。可以用rake命令自动生成，定义好Rakefile之后，使用</p>
+  <pre>rake post title='hello world' </pre>
+  <p>这样的命令即可。
+4.针对公式编辑在概率，算法中常常用到，我们可以使用mathjax来进行。</p>
 
-<p>’'’python
-print ‘hello world’
-‘’’</p>
+  <pre> <script type="text/javascript" async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+formula1: $$n==x$$
+formula2: $$n!=x$$
+</pre>
+  <p>效果：
+<script type="text/javascript" async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script></p>
+
+  <p>formula1: <script type="math/tex">n==x</script></p>
+
+  <p>formula2: <script type="math/tex">n!=x</script></p>
+
+  <p>5.当然也可以加一些分享，评论的JS到博客中，在_layout中可以修改post模板，以增加这些功能。</p>
+</blockquote>
+
+<h2 id="3推送到线上">3.推送到线上</h2>
+<blockquote>
+  <p>有前面的准备，这个步骤就简单了啊，直接使用</p>
+  <pre>
+git add -A ;#这里是加入删除选项
+git commit -m 'comments';
+git push origin master;
+</pre>
+
+  <p>然后访问https://youname.github.io 即可，可能有几秒的延迟。</p>
+</blockquote>
 
   </article>
 <!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key=/%E6%9D%82%E8%B0%88/2017/05/05/hello-world data-title=Hello World! data-url=不创造，不知道//%E6%9D%82%E8%B0%88/2017/05/05/hello-world.html></div>
+	<div class="ds-thread" data-thread-key=/%E6%9D%82%E8%B0%88/2017/05/05/hello-world data-title=利用Jekyll在Github搭建博客 data-url=不创造，不知道//%E6%9D%82%E8%B0%88/2017/05/05/hello-world.html></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-var duoshuoQuery = {short_name:"bobz653"};
-	(function() {
-		var ds = document.createElement('script');
-		ds.type = 'text/javascript';ds.async = true;
-		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-		ds.charset = 'UTF-8';
-		(document.getElementsByTagName('head')[0] 
-		 || document.getElementsByTagName('body')[0]).appendChild(ds);
-	})();
-	</script>
 <!-- 多说公共JS代码 end -->
 </div>
 
