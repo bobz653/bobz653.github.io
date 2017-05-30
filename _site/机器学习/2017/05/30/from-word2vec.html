@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>    
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width initial-scale=1">
+
+  <title>从word2vec源码讨论深度学习基础</title>
+  <meta name="description" content="最近AlphaGo战胜了柯洁让人工智能又火了一把，BAT的老大们（据说分类为技术男，文科生，产品经理）在讨论，大牛Jordan说AI过火了。所有的讨论狗来说都算是胜利。建立在神经网络结构上的机器学习算法确实比以往的算法表达能力更为广泛，谷歌的单TPU2结构可以达到45 TFLOPS，这种专门为Tensor矩阵计算...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/2017/05/30/from-word2vec.html">
+  <link rel="alternate" type="application/atom+xml" title="探索发现好玩的东西" href="http://localhost:4000/feed.xml" />
+  <script src="/scripts/jquery-1.11.2.min.js"></script>
+  <script src="/scripts/pithy.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+</head>
+
+
+  <body>
+    <header class="header">
+	<div class="header-container">
+		<div class="nav">
+			
+				<li>
+					<a href="/index.html">首页</a>
+				</li>			
+			
+			
+				<li>
+					<a href="/archive.html">存档</a>
+				</li>			
+			
+			
+				<li>
+					<a href="/category.html">类别</a>
+				</li>			
+			
+			
+				<li>
+					<a href="/about.html">关于我</a>
+				</li>			
+			
+		</div>
+		<div class="description"> 不创造，不知道 </div>		
+		<ul class="social-links">
+			<li>
+				<a href="https://github.com/bobz653" title="Github">
+					<img width="19px" height="19px" src="/images/github.png"/>
+				</a>
+			</li>
+			<li>
+				<a href="/feed.xml" title="RSS">
+					<img width="19px" height="19px" src="/images/rss.png"/>
+				</a>
+			</li>
+			<li>
+				<a href="http://www.weibo.com/bobz653" title="Weibo">
+					<img width="19px" height="19px" src="/images/twitter.png"/>
+				</a>
+			</li>
+		</ul>		
+	</div>
+</header>
+
+    <br>
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+  <br>
+  <header class="post-header">
+    <h1 class="post-title">从word2vec源码讨论深度学习基础</h1>
+   
+ <p class="post-meta">May 30, 2017 • 张波
+
+
+</p>
+
+
+  </header>
+
+
+   <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<br/><br/>  
+<article class="post-content">
+    <p>最近AlphaGo战胜了柯洁让人工智能又火了一把，BAT的老大们（据说分类为<em>技术男，文科生，产品经理</em>）在讨论，大牛Jordan说AI过火了。所有的讨论狗来说都算是胜利。建立在神经网络结构上的机器学习算法确实比以往的算法表达能力更为广泛，谷歌的单<strong>TPU2</strong>结构可以达到45 TFLOPS，这种专门为Tensor矩阵计算做出的ASIC集成芯片，相比如NVIDIA的volta的120 TFLOPS的运算速度虽然差一些，但成本据说便宜了近90%。抛开业界如火如荼的产品和发布会不谈，拨开五颜六色的产品，从最底层了解深度学习的技术是很有意思的一件事情，让我们就从13年mikolov发布的训练词向量的模型word2vec入手吧，我分成3点来讲讲这个模型。</p>
+
+<ul>
+  <li>数学基础</li>
+  <li>模型基础</li>
+  <li>词向量</li>
+</ul>
+
+<h2 id="数学基础">数学基础</h2>
+<ul>
+  <li>线性方程： y = wx + b 就是常用的线性模型，当y时离散变量的时候则是分类问题，当y时连续变量的时候，就是回归问题了。</li>
+  <li>最小二乘求参数：通常对线性方程的参数求解，理想情况下可以用最小二乘法直接求解 <script type="math/tex">X\Theta = y</script> 对方阵才能求逆矩阵，所以两边都乘以 <script type="math/tex">X^T</script>,然后两边乘以逆矩阵，则解： <script type="math/tex">\Theta = (X^tX)^{-1}X^Ty</script></li>
+  <li>非线性方程：大名鼎鼎的<strong>Sigmoid，Tanh，Relu</strong>。为了避免梯度消失或者爆炸，目前大家基本都用Relu。这里不做过多介绍。</li>
+  <li>梯度下降求参数：设代价函数为<script type="math/tex">J(\Theta)</script>, 让代价函数最小的方法是对J函数参数求导，某个参数要更新就是使用下面的公式 <script type="math/tex">\Theta_j := \Theta_j - \eta</script><script type="math/tex">{\partial J(\Theta)} \over {\partial\Theta_j}</script></li>
+  <li>参数解的个数：要么无解，要么1个或者无数个。</li>
+  <li>Huffman编码：类似层次聚类，选择数量最小的2个，两两合并，形成一个二叉树，规定左子树为0，右子树为1。则每个叶子节点的路径用01序列表示，这样做的好处就是编码长度最小，因为数量高的一定靠近根节点处，编码短。</li>
+  <li>特征值和特征向量：所谓特征值是指所有样本在特征向量（单位向量）的投影的方差，特征值越大，信息量越大。这里的特征向量可以理解成X，Y，Z轴这样的正交向量。两个向量的点积A.B就可以理解成A向量在B向量上的投影。</li>
+  <li>矩阵分解：常用的矩阵分解有<strong>PCA，SVD，NMF</strong>几种，所谓矩阵分解就是要从矩阵中找点隐藏的信息，比如主题什么的。比如<script type="math/tex">A_{m*n} = U_{m*k}V_{k*n}</script> 其中m是样本数，k是主题数，n物品数。矩阵PCA分解的一般步骤：
+    <ol>
+      <li>减去均值</li>
+      <li>求矩阵的协方差<script type="math/tex">\sum_{n*n}</script></li>
+      <li>求协方差的特征值和特征向量，这里的协方差矩阵<script type="math/tex">\sum_{n*n}</script>的TopK特征值就是我们要的K个主题，这里特征向量矩阵即为<script type="math/tex">V_{n*k}</script>。</li>
+      <li>原始矩阵压缩到K维度即为<script type="math/tex">A_{m*n}* V_{n*k}</script>,矩阵存储空间<script type="math/tex">m*n 变成m*k+ k*n</script>. SVD和NMF类同。</li>
+    </ol>
+  </li>
+</ul>
+
+<h2 id="模型基础">模型基础</h2>
+<ul>
+  <li>逻辑回归：逻辑回归当y=1的时候损失为<script type="math/tex">-logh_\theta(X)</script> 也就是h_\theta(X)越接近1，损失越小，当y=0的时候损失则为<script type="math/tex">-log(1-h_\theta(X))</script>。合并在一起，则损失函数为 <script type="math/tex">-1/m[\sum_{i=1}^{m}y^{(i)}*logh_\theta(X^{(i)}) + (1-y^{(i)})log(1-h_\theta(X^{(i)}))]</script> 分类问题通常使用逻辑回归或者softmax解决问题：使用sigmoid函数 <script type="math/tex">\sigma(x)=</script> <script type="math/tex">{ 1 } \over {1+exp(h_{w,b}(x))}</script> 将线性函数强行掰弯，值域在(0,1)之间。如果样本均匀分布则可以设置阈值为0.5.如下图</li>
+</ul>
+
+<p><img src="http://p.blog.csdn.net/images/p_blog_csdn_net/chl033/612813/o_SigmoidFunction_701_2.gif" alt="图示" /></p>
+
+<ul>
+  <li>
+    <p>模型求解：使用梯度下降，如果是随机梯度下降SGD：<script type="math/tex">\Theta_j := \Theta_j - \eta(y^{(i)} - h_\Theta(x^{(i)}))X_j^{(i)}</script> ，批量梯度下降MGD则为 <script type="math/tex">\Theta_j := \Theta_j - \eta 1 / m\sum_{i=1}^{i=m}(y^{(i)} - h_\Theta(x^{(i)}))X_j^{(i)}</script>  有意思的最小二乘和逻辑回归使用梯度下降的公式是一样的，这里NG的解释是，嗯，虽然形式一样，但内容不用，里面的y值sigmoid得是非线性函数而最小二乘是线性的。</p>
+  </li>
+  <li>
+    <p>正向传播，反向传播：逻辑回归中其实已经用到了一次反向传播更新参数，当网络有多层的时候，比如MLP神经网络，这里就要链式求导。比如网络比逻辑回归多一层，也就是隐藏层，那么正向传播的公式：<script type="math/tex">y=h_\theta(g_w(X))</script> ，反向传播的公式为：<script type="math/tex">W_j:=W_j - \eta *error*h(1-h)\theta*g*(1-g)X_j^{(i)}</script>,此处可以看到sigmoid的问题就在层数越多，梯度越小，最后梯度就消失了，使用Relu可以避免这个问题，因为Relu的梯度是1，不增也不减。</p>
+  </li>
+</ul>
+
+<h2 id="词向量">词向量</h2>
+<ul>
+  <li>问题起因：数据挖掘（数据分析，数据清洗，特征处理，模型验证，模型集成）其中特征处理有一项，就是可以给特征做embeding。以前我们做labelencoder及one-hotencoder，虽然可以对category变量进行编码，方便模型进行计算比如NB，SVM，LR，KNN等，前提是特征独立，但大多数情况，特征并不独立，比如“麦克”和“话筒”。如果one-hot化之后，他们之间的相似度是0.</li>
+  <li>解决思路：词周围的词决定了当前词的意义，那么我们可否用周围词出现的数量来标记当前词呢，当然是可以的。Globalvec就是这么做的。但数量的刻画毕竟太过简单，是否有一个更好的拟合函数来刻画<script type="math/tex">P(W_i \|Context_{W_i})</script>呢？当然也是可以的，这里就用到了一层感知机模型，用无指导的方式，训练，最大似然该拟合函数。实际上就是多个LR模型的训练，参考 <img src="http://img.blog.csdn.net/20140525173342578" alt="CBOW+HS" /></li>
+  <li>源码分析：目前我们只分析CBOW+HS模式，其他模式比如SkipGram+NS是类似的。
+    <ol>
+      <li>初始化：比如设置向量维度是50维度，输入Syn0向量保存了词汇库所有不重复词V的向量，初始化不为零的小数。Syn1存放huffman树的非叶节点参数，也是50维度，初始设置为0。窗口可以设置为5。</li>
+      <li>训练：<img src="http://img.blog.csdn.net/20140525182637750" alt="源码1" /> <img src="http://img.blog.csdn.net/20140525182645906" alt="源码2" /> 当一句读进来，每一个词W都会有上下文向量（不包括自己），将50维向量累加，形成向量nelu1,对于W的huffman树有个编码，比如1100，那么将执行4词逻辑回归，每次逻辑回归，都会按照公式更新参数，Syn1参数更新公式<script type="math/tex">Syn1[i]:=Syn1[i] - \eta(y - nelu1*syn1)*nelu1</script> 这里y是树编码的某个位的数值，累计残差为 <script type="math/tex">$nelue += \eta(y - nelu1*syn1)* syn1</script> 然后更新Syn0，注意不是更新nelu1,而是更新Syn0 <script type="math/tex">Syn0 += nelue</script></li>
+      <li>结束：一轮迭代2G文本，大概10亿字，训练2-3小时即可。由于word2vec并不是神经网络，不含有隐层，所以做了N次逻辑回归，反向传播就一次，速度是非常快的。训练完毕，每个词向量就有了，使用PCA进行降维，可以把一些有意思的词可视化出来。对于向量的可视化，可以参考multidimesional scaling，也挺有意思的。</li>
+      <li>有关算法提速：通过hs加速训练，NS也可以。另外exp指数计算采用的查表方式，NS和HS其实可以混合使用。另外<strong>多线程并没有加锁</strong>，这个问过作者，说多次梯度下降没有问题，就算重复更新也无妨。有兴趣的可以参考<a href="http://blog.csdn.net/mytestmy/article/details/26961315">博文</a>，这位博主写的挺好。</li>
+    </ol>
+  </li>
+</ul>
+
+<h2 id="参考">参考</h2>
+<ol>
+  <li>学着使用mathjax，公式写的有点仓促，但挺好用的哈，参考<a href="http://m.blog.csdn.net/article/details?id=46757757">http://m.blog.csdn.net/article/details?id=46757757</a></li>
+  <li>word2vec写的不错的博客地址<a href="http://blog.csdn.net/mytestmy/article/details/26969149">http://blog.csdn.net/mytestmy/article/details/26969149</a></li>
+  <li>PCA、SVD的内容参考<a href="http://blog.sina.com.cn/s/blog_66a6172c0102v1v7.html">http://blog.sina.com.cn/s/blog_66a6172c0102v1v7.html</a>,写的比较通俗</li>
+</ol>
+
+  </article>
+<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key=/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/2017/05/30/from-word2vec data-title=从word2vec源码讨论深度学习基础 data-url=不创造，不知道//%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/2017/05/30/from-word2vec.html></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<!-- 多说公共JS代码 end -->
+</div>
+
+      </div>
+    </div>
+    
+    <footer class="footer">
+  <div id="gotop">^</div>
+  <br>
+	@2017 powered by jekyll.
+</footer>
+
+    
+  </body>
+
+</html>
