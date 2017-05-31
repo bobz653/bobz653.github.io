@@ -103,7 +103,7 @@
 
 <h2 id="数学基础">数学基础</h2>
 <ul>
-  <li>线性方程： y = wx + b 就是常用的线性模型，当y时离散变量的时候则是分类问题，当y时连续变量的时候，就是回归问题了。</li>
+  <li>线性方程： <script type="math/tex">y = wx + b</script> 就是常用的线性模型，当y时离散变量的时候则是分类问题，当y时连续变量的时候，就是回归问题了。</li>
   <li>最小二乘求参数：通常对线性方程的参数求解，理想情况下可以用最小二乘法直接求解 <script type="math/tex">X\Theta = y</script> 对方阵才能求逆矩阵，所以两边都乘以 <script type="math/tex">X^T</script>,然后两边乘以逆矩阵，则解： <script type="math/tex">\Theta = (X^tX)^{-1}X^Ty</script></li>
   <li>非线性方程：大名鼎鼎的<strong>Sigmoid，Tanh，Relu</strong>。为了避免梯度消失或者爆炸，目前大家基本都用Relu。这里不做过多介绍。</li>
   <li>梯度下降求参数：设代价函数为<script type="math/tex">J(\Theta)</script>, 让代价函数最小的方法是对J函数参数求导，某个参数要更新就是使用下面的公式 <script type="math/tex">\Theta_j := \Theta_j - \eta</script><script type="math/tex">{\partial J(\Theta)} \over {\partial\Theta_j}</script></li>

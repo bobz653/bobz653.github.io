@@ -6,8 +6,8 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 31 May 2017 12:29:21 +0800</pubDate>
-    <lastBuildDate>Wed, 31 May 2017 12:29:21 +0800</lastBuildDate>
+    <pubDate>Wed, 31 May 2017 13:58:53 +0800</pubDate>
+    <lastBuildDate>Wed, 31 May 2017 13:58:53 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
     
       <item>
@@ -22,7 +22,7 @@
 
 &lt;h2 id=&quot;数学基础&quot;&gt;数学基础&lt;/h2&gt;
 &lt;ul&gt;
-  &lt;li&gt;线性方程： y = wx + b 就是常用的线性模型，当y时离散变量的时候则是分类问题，当y时连续变量的时候，就是回归问题了。&lt;/li&gt;
+  &lt;li&gt;线性方程： &lt;script type=&quot;math/tex&quot;&gt;y = wx + b&lt;/script&gt; 就是常用的线性模型，当y时离散变量的时候则是分类问题，当y时连续变量的时候，就是回归问题了。&lt;/li&gt;
   &lt;li&gt;最小二乘求参数：通常对线性方程的参数求解，理想情况下可以用最小二乘法直接求解 &lt;script type=&quot;math/tex&quot;&gt;X\Theta = y&lt;/script&gt; 对方阵才能求逆矩阵，所以两边都乘以 &lt;script type=&quot;math/tex&quot;&gt;X^T&lt;/script&gt;,然后两边乘以逆矩阵，则解： &lt;script type=&quot;math/tex&quot;&gt;\Theta = (X^tX)^{-1}X^Ty&lt;/script&gt;&lt;/li&gt;
   &lt;li&gt;非线性方程：大名鼎鼎的&lt;strong&gt;Sigmoid，Tanh，Relu&lt;/strong&gt;。为了避免梯度消失或者爆炸，目前大家基本都用Relu。这里不做过多介绍。&lt;/li&gt;
   &lt;li&gt;梯度下降求参数：设代价函数为&lt;script type=&quot;math/tex&quot;&gt;J(\Theta)&lt;/script&gt;, 让代价函数最小的方法是对J函数参数求导，某个参数要更新就是使用下面的公式 &lt;script type=&quot;math/tex&quot;&gt;\Theta_j := \Theta_j - \eta&lt;/script&gt;&lt;script type=&quot;math/tex&quot;&gt;{\partial J(\Theta)} \over {\partial\Theta_j}&lt;/script&gt;&lt;/li&gt;
