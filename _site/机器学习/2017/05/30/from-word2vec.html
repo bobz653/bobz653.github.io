@@ -93,7 +93,7 @@
 <!-- JiaThis Button END -->
 <br/><br/>  
 <article class="post-content">
-    <p>最近AlphaGo战胜了柯洁让人工智能又火了一把，BAT的老大们（据说分类为<em>技术男，文科生，产品经理</em>）在讨论，大牛Jordan说AI过火了。所有的讨论狗来说都算是胜利。建立在神经网络结构上的机器学习算法确实比以往的算法表达能力更为广泛，谷歌的单<strong>TPU2</strong>结构可以达到45 TFLOPS，这种专门为Tensor矩阵计算做出的ASIC集成芯片，相比如NVIDIA的volta的120 TFLOPS的运算速度虽然差一些，但成本据说便宜了近90%。抛开业界如火如荼的产品和发布会不谈，拨开五颜六色的产品，从最底层了解深度学习的技术是很有意思的一件事情，让我们就从13年mikolov发布的训练词向量的模型word2vec入手吧，我分成3点来讲讲这个模型。</p>
+    <p>最近AlphaGo战胜了柯洁让人工智能又火了一把，BAT的老大们（据说分类为<em>技术男，文科生，产品经理</em>）在讨论，大牛Jordan说AI过火了。所有的讨论狗来说都算是胜利。建立在神经网络结构上的机器学习算法确实比以往的算法表达能力更为广泛，谷歌的单<strong>TPU2</strong>结构可以达到45 TFLOPS，这种专门为Tensor矩阵计算做出的ASIC集成芯片，相比如NVIDIA的volta的120TFLOPS的运算速度虽然差一些，但成本据说便宜了近90%。抛开业界如火如荼的产品和发布会不谈，拨开五颜六色的产品，从最底层了解深度学习的技术是很有意思的一件事情，让我们就从13年mikolov发布的训练词向量的模型word2vec入手吧，我分成3点来讲讲这个模型。</p>
 
 <ul>
   <li>数学基础</li>
@@ -122,14 +122,14 @@
 
 <h2 id="模型基础">模型基础</h2>
 <ul>
-  <li>逻辑回归：逻辑回归当y=1的时候损失为<script type="math/tex">-logh_\theta(X)</script> 也就是h_\theta(X)越接近1，损失越小，当y=0的时候损失则为<script type="math/tex">-log(1-h_\theta(X))</script>。合并在一起，则损失函数为 <script type="math/tex">-1/m[\sum_{i=1}^{m}y^{(i)}*logh_\theta(X^{(i)}) + (1-y^{(i)})log(1-h_\theta(X^{(i)}))]</script> 分类问题通常使用逻辑回归或者softmax解决问题：使用sigmoid函数 <script type="math/tex">\sigma(x)=</script> <script type="math/tex">{ 1 } \over {1+exp(h_{w,b}(x))}</script> 将线性函数强行掰弯，值域在(0,1)之间。如果样本均匀分布则可以设置阈值为0.5.如下图</li>
+  <li>逻辑回归：逻辑回归当y=1的时候损失为<script type="math/tex">-logh_\theta(X)</script> 也就是<script type="math/tex">h_\theta(X)</script>越接近1，损失越小，当y=0的时候损失则为<script type="math/tex">-log(1-h_\theta(X))</script>。合并在一起，则损失函数为 <script type="math/tex">-1/m[\sum_{i=1}^{m}y^{(i)}*logh_\theta(X^{(i)}) + (1-y^{(i)})log(1-h_\theta(X^{(i)}))]</script> 分类问题通常使用逻辑回归或者softmax解决问题：使用sigmoid函数 <script type="math/tex">\sigma(x)=</script> <script type="math/tex">{ 1 } \over {1+exp(-h_{w,b}(x))}</script> 将线性函数强行掰弯，值域在(0,1)之间。如果样本均匀分布则可以设置阈值为0.5.如下图</li>
 </ul>
 
 <p><img src="http://p.blog.csdn.net/images/p_blog_csdn_net/chl033/612813/o_SigmoidFunction_701_2.gif" alt="图示" /></p>
 
 <ul>
   <li>
-    <p>模型求解：使用梯度下降，如果是随机梯度下降SGD：<script type="math/tex">\Theta_j := \Theta_j - \eta(y^{(i)} - h_\Theta(x^{(i)}))X_j^{(i)}</script> ，批量梯度下降MGD则为 <script type="math/tex">\Theta_j := \Theta_j - \eta 1 / m\sum_{i=1}^{i=m}(y^{(i)} - h_\Theta(x^{(i)}))X_j^{(i)}</script>  有意思的最小二乘和逻辑回归使用梯度下降的公式是一样的，这里NG的解释是，嗯，虽然形式一样，但内容不用，里面的y值sigmoid得是非线性函数而最小二乘是线性的。</p>
+    <p>模型求解：使用梯度下降，如果是随机梯度下降SGD：<script type="math/tex">\Theta_j := \Theta_j - \eta(y^{(i)} - h_\Theta(x^{(i)}))X_j^{(i)}</script> ，批量梯度下降MGD则为 <script type="math/tex">\Theta_j := \Theta_j - \eta 1 / m\sum_{i=1}^{i=m}(y^{(i)} - h_\Theta(x^{(i)}))X_j^{(i)}</script>  有意思的最小二乘和逻辑回归使用梯度下降的公式是一样的，这里NG的解释是，嗯，虽然形式一样，但内容不用，里面的y值sigmoid是非线性而在最小二乘中是线性的。</p>
   </li>
   <li>
     <p>正向传播，反向传播：逻辑回归中其实已经用到了一次反向传播更新参数，当网络有多层的时候，比如MLP神经网络，这里就要链式求导。比如网络比逻辑回归多一层，也就是隐藏层，那么正向传播的公式：<script type="math/tex">y=h_\theta(g_w(X))</script> ，反向传播的公式为：<script type="math/tex">W_j:=W_j - \eta *error*h(1-h)\theta*g*(1-g)X_j^{(i)}</script>,此处可以看到sigmoid的问题就在层数越多，梯度越小，最后梯度就消失了，使用Relu可以避免这个问题，因为Relu的梯度是1，不增也不减。</p>
@@ -138,13 +138,13 @@
 
 <h2 id="词向量">词向量</h2>
 <ul>
-  <li>问题起因：数据挖掘（数据分析，数据清洗，特征处理，模型验证，模型集成）其中特征处理有一项，就是可以给特征做embeding。以前我们做labelencoder及one-hotencoder，虽然可以对category变量进行编码，方便模型进行计算比如NB，SVM，LR，KNN等，前提是特征独立，但大多数情况，特征并不独立，比如“麦克”和“话筒”。如果one-hot化之后，他们之间的相似度是0.</li>
+  <li>问题起因：数据挖掘（数据分析，数据清洗，特征处理，模型验证，模型集成）其中特征处理有一项，就是可以给特征做embedding。以前我们做labelencoder及one-hotencoder，虽然可以对category变量进行编码，方便模型进行计算比如NB，SVM，LR，KNN等，前提是特征独立，但大多数情况，特征并不独立，比如“麦克”和“话筒”。如果one-hot化之后，他们之间的相似度是0.</li>
   <li>解决思路：词周围的词决定了当前词的意义，那么我们可否用周围词出现的数量来标记当前词呢，当然是可以的。Globalvec就是这么做的。但数量的刻画毕竟太过简单，是否有一个更好的拟合函数来刻画<script type="math/tex">P(W_i \|Context_{W_i})</script>呢？当然也是可以的，这里就用到了一层感知机模型，用无指导的方式，训练，最大似然该拟合函数。实际上就是多个LR模型的训练，参考 <img src="http://img.blog.csdn.net/20140525173342578" alt="CBOW+HS" /></li>
   <li>源码分析：目前我们只分析CBOW+HS模式，其他模式比如SkipGram+NS是类似的。
     <ol>
       <li>初始化：比如设置向量维度是50维度，输入Syn0向量保存了词汇库所有不重复词V的向量，初始化不为零的小数。Syn1存放huffman树的非叶节点参数，也是50维度，初始设置为0。窗口可以设置为5。</li>
       <li>训练：<img src="http://img.blog.csdn.net/20140525182637750" alt="源码1" /> <img src="http://img.blog.csdn.net/20140525182645906" alt="源码2" /> 当一句读进来，每一个词W都会有上下文向量（不包括自己），将50维向量累加，形成向量nelu1,对于W的huffman树有个编码，比如1100，那么将执行4词逻辑回归，每次逻辑回归，都会按照公式更新参数，Syn1参数更新公式<script type="math/tex">Syn1[i]:=Syn1[i] - \eta(y - nelu1*syn1)*nelu1</script> 这里y是树编码的某个位的数值，累计残差为 <script type="math/tex">$nelue += \eta(y - nelu1*syn1)* syn1</script> 然后更新Syn0，注意不是更新nelu1,而是更新Syn0 <script type="math/tex">Syn0 += nelue</script></li>
-      <li>结束：一轮迭代2G文本，大概10亿字，训练2-3小时即可。由于word2vec并不是神经网络，不含有隐层，所以做了N次逻辑回归，反向传播就一次，速度是非常快的。训练完毕，每个词向量就有了，使用PCA进行降维，可以把一些有意思的词可视化出来。对于向量的可视化，可以参考multidimesional scaling，也挺有意思的。</li>
+      <li>结束：一轮迭代2G文本，大概10亿字，训练2-3小时即可。由于word2vec并不是神经网络，不含有隐层，所以做了N次逻辑回归，反向传播就一次，速度是非常快的。训练完毕，每个词向量就有了，使用PCA进行降维，可以把一些有意思的词可视化出来。对于向量的可视化，可以参考multidimensional scaling，也挺有意思的。</li>
       <li>有关算法提速：通过hs加速训练，NS也可以。另外exp指数计算采用的查表方式，NS和HS其实可以混合使用。另外<strong>多线程并没有加锁</strong>，这个问过作者，说多次梯度下降没有问题，就算重复更新也无妨。有兴趣的可以参考<a href="http://blog.csdn.net/mytestmy/article/details/26961315">博文</a>，这位博主写的挺好。</li>
     </ol>
   </li>

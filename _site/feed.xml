@@ -6,13 +6,13 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 30 May 2017 18:03:48 +0800</pubDate>
-    <lastBuildDate>Tue, 30 May 2017 18:03:48 +0800</lastBuildDate>
+    <pubDate>Wed, 31 May 2017 12:26:30 +0800</pubDate>
+    <lastBuildDate>Wed, 31 May 2017 12:26:30 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
     
       <item>
         <title>从word2vec源码讨论深度学习基础</title>
-        <description>&lt;p&gt;最近AlphaGo战胜了柯洁让人工智能又火了一把，BAT的老大们（据说分类为&lt;em&gt;技术男，文科生，产品经理&lt;/em&gt;）在讨论，大牛Jordan说AI过火了。所有的讨论狗来说都算是胜利。建立在神经网络结构上的机器学习算法确实比以往的算法表达能力更为广泛，谷歌的单&lt;strong&gt;TPU2&lt;/strong&gt;结构可以达到45 TFLOPS，这种专门为Tensor矩阵计算做出的ASIC集成芯片，相比如NVIDIA的volta的120 TFLOPS的运算速度虽然差一些，但成本据说便宜了近90%。抛开业界如火如荼的产品和发布会不谈，拨开五颜六色的产品，从最底层了解深度学习的技术是很有意思的一件事情，让我们就从13年mikolov发布的训练词向量的模型word2vec入手吧，我分成3点来讲讲这个模型。&lt;/p&gt;
+        <description>&lt;p&gt;最近AlphaGo战胜了柯洁让人工智能又火了一把，BAT的老大们（据说分类为&lt;em&gt;技术男，文科生，产品经理&lt;/em&gt;）在讨论，大牛Jordan说AI过火了。所有的讨论狗来说都算是胜利。建立在神经网络结构上的机器学习算法确实比以往的算法表达能力更为广泛，谷歌的单&lt;strong&gt;TPU2&lt;/strong&gt;结构可以达到45 TFLOPS，这种专门为Tensor矩阵计算做出的ASIC集成芯片，相比如NVIDIA的volta的120TFLOPS的运算速度虽然差一些，但成本据说便宜了近90%。抛开业界如火如荼的产品和发布会不谈，拨开五颜六色的产品，从最底层了解深度学习的技术是很有意思的一件事情，让我们就从13年mikolov发布的训练词向量的模型word2vec入手吧，我分成3点来讲讲这个模型。&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;数学基础&lt;/li&gt;
@@ -41,14 +41,14 @@
 
 &lt;h2 id=&quot;模型基础&quot;&gt;模型基础&lt;/h2&gt;
 &lt;ul&gt;
-  &lt;li&gt;逻辑回归：逻辑回归当y=1的时候损失为&lt;script type=&quot;math/tex&quot;&gt;-logh_\theta(X)&lt;/script&gt; 也就是h_\theta(X)越接近1，损失越小，当y=0的时候损失则为&lt;script type=&quot;math/tex&quot;&gt;-log(1-h_\theta(X))&lt;/script&gt;。合并在一起，则损失函数为 &lt;script type=&quot;math/tex&quot;&gt;-1/m[\sum_{i=1}^{m}y^{(i)}*logh_\theta(X^{(i)}) + (1-y^{(i)})log(1-h_\theta(X^{(i)}))]&lt;/script&gt; 分类问题通常使用逻辑回归或者softmax解决问题：使用sigmoid函数 &lt;script type=&quot;math/tex&quot;&gt;\sigma(x)=&lt;/script&gt; &lt;script type=&quot;math/tex&quot;&gt;{ 1 } \over {1+exp(h_{w,b}(x))}&lt;/script&gt; 将线性函数强行掰弯，值域在(0,1)之间。如果样本均匀分布则可以设置阈值为0.5.如下图&lt;/li&gt;
+  &lt;li&gt;逻辑回归：逻辑回归当y=1的时候损失为&lt;script type=&quot;math/tex&quot;&gt;-logh_\theta(X)&lt;/script&gt; 也就是&lt;script type=&quot;math/tex&quot;&gt;h_\theta(X)&lt;/script&gt;越接近1，损失越小，当y=0的时候损失则为&lt;script type=&quot;math/tex&quot;&gt;-log(1-h_\theta(X))&lt;/script&gt;。合并在一起，则损失函数为 &lt;script type=&quot;math/tex&quot;&gt;-1/m[\sum_{i=1}^{m}y^{(i)}*logh_\theta(X^{(i)}) + (1-y^{(i)})log(1-h_\theta(X^{(i)}))]&lt;/script&gt; 分类问题通常使用逻辑回归或者softmax解决问题：使用sigmoid函数 &lt;script type=&quot;math/tex&quot;&gt;\sigma(x)=&lt;/script&gt; &lt;script type=&quot;math/tex&quot;&gt;{ 1 } \over {1+exp(-h_{w,b}(x))}&lt;/script&gt; 将线性函数强行掰弯，值域在(0,1)之间。如果样本均匀分布则可以设置阈值为0.5.如下图&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;img src=&quot;http://p.blog.csdn.net/images/p_blog_csdn_net/chl033/612813/o_SigmoidFunction_701_2.gif&quot; alt=&quot;图示&quot; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;
-    &lt;p&gt;模型求解：使用梯度下降，如果是随机梯度下降SGD：&lt;script type=&quot;math/tex&quot;&gt;\Theta_j := \Theta_j - \eta(y^{(i)} - h_\Theta(x^{(i)}))X_j^{(i)}&lt;/script&gt; ，批量梯度下降MGD则为 &lt;script type=&quot;math/tex&quot;&gt;\Theta_j := \Theta_j - \eta 1 / m\sum_{i=1}^{i=m}(y^{(i)} - h_\Theta(x^{(i)}))X_j^{(i)}&lt;/script&gt;  有意思的最小二乘和逻辑回归使用梯度下降的公式是一样的，这里NG的解释是，嗯，虽然形式一样，但内容不用，里面的y值sigmoid得是非线性函数而最小二乘是线性的。&lt;/p&gt;
+    &lt;p&gt;模型求解：使用梯度下降，如果是随机梯度下降SGD：&lt;script type=&quot;math/tex&quot;&gt;\Theta_j := \Theta_j - \eta(y^{(i)} - h_\Theta(x^{(i)}))X_j^{(i)}&lt;/script&gt; ，批量梯度下降MGD则为 &lt;script type=&quot;math/tex&quot;&gt;\Theta_j := \Theta_j - \eta 1 / m\sum_{i=1}^{i=m}(y^{(i)} - h_\Theta(x^{(i)}))X_j^{(i)}&lt;/script&gt;  有意思的最小二乘和逻辑回归使用梯度下降的公式是一样的，这里NG的解释是，嗯，虽然形式一样，但内容不用，里面的y值sigmoid是非线性而在最小二乘中是线性的。&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;正向传播，反向传播：逻辑回归中其实已经用到了一次反向传播更新参数，当网络有多层的时候，比如MLP神经网络，这里就要链式求导。比如网络比逻辑回归多一层，也就是隐藏层，那么正向传播的公式：&lt;script type=&quot;math/tex&quot;&gt;y=h_\theta(g_w(X))&lt;/script&gt; ，反向传播的公式为：&lt;script type=&quot;math/tex&quot;&gt;W_j:=W_j - \eta *error*h(1-h)\theta*g*(1-g)X_j^{(i)}&lt;/script&gt;,此处可以看到sigmoid的问题就在层数越多，梯度越小，最后梯度就消失了，使用Relu可以避免这个问题，因为Relu的梯度是1，不增也不减。&lt;/p&gt;
@@ -57,13 +57,13 @@
 
 &lt;h2 id=&quot;词向量&quot;&gt;词向量&lt;/h2&gt;
 &lt;ul&gt;
-  &lt;li&gt;问题起因：数据挖掘（数据分析，数据清洗，特征处理，模型验证，模型集成）其中特征处理有一项，就是可以给特征做embeding。以前我们做labelencoder及one-hotencoder，虽然可以对category变量进行编码，方便模型进行计算比如NB，SVM，LR，KNN等，前提是特征独立，但大多数情况，特征并不独立，比如“麦克”和“话筒”。如果one-hot化之后，他们之间的相似度是0.&lt;/li&gt;
+  &lt;li&gt;问题起因：数据挖掘（数据分析，数据清洗，特征处理，模型验证，模型集成）其中特征处理有一项，就是可以给特征做embedding。以前我们做labelencoder及one-hotencoder，虽然可以对category变量进行编码，方便模型进行计算比如NB，SVM，LR，KNN等，前提是特征独立，但大多数情况，特征并不独立，比如“麦克”和“话筒”。如果one-hot化之后，他们之间的相似度是0.&lt;/li&gt;
   &lt;li&gt;解决思路：词周围的词决定了当前词的意义，那么我们可否用周围词出现的数量来标记当前词呢，当然是可以的。Globalvec就是这么做的。但数量的刻画毕竟太过简单，是否有一个更好的拟合函数来刻画&lt;script type=&quot;math/tex&quot;&gt;P(W_i \|Context_{W_i})&lt;/script&gt;呢？当然也是可以的，这里就用到了一层感知机模型，用无指导的方式，训练，最大似然该拟合函数。实际上就是多个LR模型的训练，参考 &lt;img src=&quot;http://img.blog.csdn.net/20140525173342578&quot; alt=&quot;CBOW+HS&quot; /&gt;&lt;/li&gt;
   &lt;li&gt;源码分析：目前我们只分析CBOW+HS模式，其他模式比如SkipGram+NS是类似的。
     &lt;ol&gt;
       &lt;li&gt;初始化：比如设置向量维度是50维度，输入Syn0向量保存了词汇库所有不重复词V的向量，初始化不为零的小数。Syn1存放huffman树的非叶节点参数，也是50维度，初始设置为0。窗口可以设置为5。&lt;/li&gt;
       &lt;li&gt;训练：&lt;img src=&quot;http://img.blog.csdn.net/20140525182637750&quot; alt=&quot;源码1&quot; /&gt; &lt;img src=&quot;http://img.blog.csdn.net/20140525182645906&quot; alt=&quot;源码2&quot; /&gt; 当一句读进来，每一个词W都会有上下文向量（不包括自己），将50维向量累加，形成向量nelu1,对于W的huffman树有个编码，比如1100，那么将执行4词逻辑回归，每次逻辑回归，都会按照公式更新参数，Syn1参数更新公式&lt;script type=&quot;math/tex&quot;&gt;Syn1[i]:=Syn1[i] - \eta(y - nelu1*syn1)*nelu1&lt;/script&gt; 这里y是树编码的某个位的数值，累计残差为 &lt;script type=&quot;math/tex&quot;&gt;$nelue += \eta(y - nelu1*syn1)* syn1&lt;/script&gt; 然后更新Syn0，注意不是更新nelu1,而是更新Syn0 &lt;script type=&quot;math/tex&quot;&gt;Syn0 += nelue&lt;/script&gt;&lt;/li&gt;
-      &lt;li&gt;结束：一轮迭代2G文本，大概10亿字，训练2-3小时即可。由于word2vec并不是神经网络，不含有隐层，所以做了N次逻辑回归，反向传播就一次，速度是非常快的。训练完毕，每个词向量就有了，使用PCA进行降维，可以把一些有意思的词可视化出来。对于向量的可视化，可以参考multidimesional scaling，也挺有意思的。&lt;/li&gt;
+      &lt;li&gt;结束：一轮迭代2G文本，大概10亿字，训练2-3小时即可。由于word2vec并不是神经网络，不含有隐层，所以做了N次逻辑回归，反向传播就一次，速度是非常快的。训练完毕，每个词向量就有了，使用PCA进行降维，可以把一些有意思的词可视化出来。对于向量的可视化，可以参考multidimensional scaling，也挺有意思的。&lt;/li&gt;
       &lt;li&gt;有关算法提速：通过hs加速训练，NS也可以。另外exp指数计算采用的查表方式，NS和HS其实可以混合使用。另外&lt;strong&gt;多线程并没有加锁&lt;/strong&gt;，这个问过作者，说多次梯度下降没有问题，就算重复更新也无妨。有兴趣的可以参考&lt;a href=&quot;http://blog.csdn.net/mytestmy/article/details/26961315&quot;&gt;博文&lt;/a&gt;，这位博主写的挺好。&lt;/li&gt;
     &lt;/ol&gt;
   &lt;/li&gt;
