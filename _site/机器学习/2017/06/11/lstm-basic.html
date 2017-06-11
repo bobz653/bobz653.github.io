@@ -127,7 +127,7 @@
 </ul>
 
 <h2 id="安装和源码">安装和源码</h2>
-<p>网上有很多相关的源码，很容易获取，这里我给个基本安装配置</p>
+<p>网上有很多相关的源码，很容易获取，这里我给个基本安装配置,源码是做情感分类。</p>
 
 <ol>
   <li>版本兼容问题
@@ -137,12 +137,13 @@ print keras.__version__
 import tensorflow
 print tensorflow.__version__
 </pre>
-      <p>我机器上的keras版本是2.0.4,tensorflow版本是1.1.0，注意keras默认的后端是TensorFlow，因为这个作者本来也是tensorflow的作者，所以当然用自己的东西啦，Theano目前来看已经式微了。版本一定使用最新的，不然会出现model.add()的时候报错哦。</p>
+      <p>我机器上的keras版本是2.0.4,tensorflow版本是1.1.0，注意keras默认的后端是TensorFlow，因为这个作者本来也是tensorflow的作者，所以当然用自己的东西啦，Theano目前来看已经式微了。版本一定使用最新的，不然会出现model.add()的时候报错哦。如果要安装新的记得</p>
+      <pre>pip uninstall keras/tensorflow</pre>
     </blockquote>
   </li>
   <li>网络参数个数
     <blockquote>
-      <p>代码中通过model.summay()可以看到参数数量的多少，我这里可以给大家算一下，这样基本就知道网络模型是个什么样子。这里有词汇库14322个，embedding层是256维度，那么embeddign参数是14322*256,LSTM层的参数是4次计算，每次有个偏置，还有连接层的参数，所以参数为256 * 128 + 128 * 129 = 197120.明白参数的个数对模型了解很重要。</p>
+      <p>代码中通过model.summary()可以看到参数数量的多少，我这里可以给大家算一下，这样基本就知道网络模型是个什么样子。这里有词汇库14322个，embedding层是256维度，那么embeddign参数是14322*256,LSTM层的参数是4次计算，每次有个偏置，还有连接层的参数，所以参数为256 * 128 + 128 * 129 = 197120.明白参数的个数对模型了解很重要。</p>
       <pre>model = Sequential()
 model.add(Embedding(14322, 256, input_length=maxlen))
 model.add(LSTM(128))

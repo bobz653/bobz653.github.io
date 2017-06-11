@@ -32,17 +32,18 @@ Word2vec的无监督学习可以学习到当前词周边的语义，似然函数
 * 如果最后用的是每个LSTM时刻的向量，通常这是序列标注任务。![序列标注图](http://pic.w2bc.com/upload/201703/10/201703101724089047.jpg) 这是就类似咱们通常说的**Seq2Seq**。
 
 ## 安装和源码
-网上有很多相关的源码，很容易获取，这里我给个基本安装配置
+网上有很多相关的源码，很容易获取，这里我给个基本安装配置,源码是做情感分类。
 
 1. 版本兼容问题
 > <pre>import keras 
 > print keras.__version__
 > import tensorflow
 > print tensorflow.__version__
-> </pre> 我机器上的keras版本是2.0.4,tensorflow版本是1.1.0，注意keras默认的后端是TensorFlow，因为这个作者本来也是tensorflow的作者，所以当然用自己的东西啦，Theano目前来看已经式微了。版本一定使用最新的，不然会出现model.add()的时候报错哦。
+> </pre> 我机器上的keras版本是2.0.4,tensorflow版本是1.1.0，注意keras默认的后端是TensorFlow，因为这个作者本来也是tensorflow的作者，所以当然用自己的东西啦，Theano目前来看已经式微了。版本一定使用最新的，不然会出现model.add()的时候报错哦。如果要安装新的记得
+> <pre>pip uninstall keras/tensorflow</pre>
 
 2. 网络参数个数
-> 代码中通过model.summay()可以看到参数数量的多少，我这里可以给大家算一下，这样基本就知道网络模型是个什么样子。这里有词汇库14322个，embedding层是256维度，那么embeddign参数是14322*256,LSTM层的参数是4次计算，每次有个偏置，还有连接层的参数，所以参数为256 * 128 + 128 * 129 = 197120.明白参数的个数对模型了解很重要。
+> 代码中通过model.summary()可以看到参数数量的多少，我这里可以给大家算一下，这样基本就知道网络模型是个什么样子。这里有词汇库14322个，embedding层是256维度，那么embeddign参数是14322*256,LSTM层的参数是4次计算，每次有个偏置，还有连接层的参数，所以参数为256 * 128 + 128 * 129 = 197120.明白参数的个数对模型了解很重要。
 > <pre>model = Sequential()
 model.add(Embedding(14322, 256, input_length=maxlen))
 model.add(LSTM(128))
