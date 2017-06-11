@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>    
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width initial-scale=1">
+
+  <title>浅析RNN(LSTM)网络结构【附源码】</title>
+  <meta name="description" content="前一篇博文讨论了深度学习基础和一些数学知识，比如Word2vec，为啥要选mikolov的word2vec，虽然这个模型还不是深度网络，但包含了多次LR的参数训练，这个过程我觉得就是所有神经网络的算法基础。目前深度学习用的比较多的是CNN，RNN。在图像中用CNN比较多，因为CNN中的filter+pooling...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/2017/06/11/lstm-basic.html">
+  <link rel="alternate" type="application/atom+xml" title="探索发现好玩的东西" href="http://localhost:4000/feed.xml" />
+  <script src="/scripts/jquery-1.11.2.min.js"></script>
+  <script src="/scripts/pithy.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+</head>
+
+
+  <body>
+    <header class="header">
+	<div class="header-container">
+		<div class="nav">
+			
+				<li>
+					<a href="/index.html">首页</a>
+				</li>			
+			
+			
+				<li>
+					<a href="/archive.html">存档</a>
+				</li>			
+			
+			
+				<li>
+					<a href="/category.html">类别</a>
+				</li>			
+			
+			
+				<li>
+					<a href="/about.html">关于</a>
+				</li>			
+			
+		</div>
+		<div class="description"> 不创造，不知道 </div>		
+		<ul class="social-links">
+			<li>
+				<a href="https://github.com/bobz653" title="Github">
+					<img width="19px" height="19px" src="/images/github.png"/>
+				</a>
+			</li>
+			<li>
+				<a href="/feed.xml" title="RSS">
+					<img width="19px" height="19px" src="/images/rss.png"/>
+				</a>
+			</li>
+			<li>
+				<a href="http://www.weibo.com/bobz653" title="Weibo">
+					<img width="19px" height="19px" src="/images/twitter.png"/>
+				</a>
+			</li>
+		</ul>		
+	</div>
+</header>
+
+    <br>
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+  <br>
+  <header class="post-header">
+    <h1 class="post-title">浅析RNN(LSTM)网络结构【附源码】</h1>
+   
+ <p class="post-meta">Jun 11, 2017 • 张波
+
+
+</p>
+
+
+  </header>
+
+
+   <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<br/><br/>  
+<article class="post-content">
+    <p>前一篇博文讨论了深度学习基础和一些数学知识，比如<strong>Word2vec</strong>，为啥要选mikolov的word2vec，虽然这个模型还不是深度网络，但包含了多次LR的参数训练，这个过程我觉得就是所有神经网络的算法基础。目前深度学习用的比较多的是CNN，RNN。在图像中用CNN比较多，因为CNN中的filter+pooling可以在图片各种位置空间上学习出多种多样的特征。在时序信息（<em>信息是有关时间和序列的</em>）中用的比较多的是RNN，比如语音，NLP，以及时序信息。LSTM是RNN中的用的比较多的网络，看了许多资料现在算是明白一些了。本文也分3个部分，最后会附上样例代码，现在开始从底层分析LSTM的结构吧。</p>
+
+<ul>
+  <li>模型分析：RNN到LSTM，结构和参数分析</li>
+  <li>模型应用：预测（分类、序列Seq2Seq）</li>
+  <li>安装和源码：注意的问题</li>
+</ul>
+
+<h2 id="模型分析">模型分析</h2>
+<p>Word2vec的无监督学习可以学习到当前词周边的语义，似然函数是<script type="math/tex">P(W_i \| context_wi) = -log((</script> <script type="math/tex">{ exp (W^tx)} \over {\Sigma^V_1 exp(W^ix)}</script><script type="math/tex">))</script>,损失函数使用交叉熵，使得似然函数最大，当然这里似然函数取了负值。当然说是无监督学习，里面用的是监督。这里在训练的时候参数不断的更新，其实这已经像RNN了，上次的参数可以继承。</p>
+
+<ul>
+  <li>RNN：在RNN序列信息学习中，目标是分类或者是序列。这里训练数据需要上一时刻的隐藏层参数<script type="math/tex">HiddenLayer_t</script> 即为 <script type="math/tex">H_t</script>，注意这个参数是列向量，里面是数值类型。这里向量的合并可以理解成相加，类似word2vec那样。<img src="http://colah.github.io/posts/2015-08-Understanding-LSTMs/img/LSTM3-SimpleRNN.png" alt="RNN结构图" /></li>
+  <li>LSTM：RNN的问题就在于直接进行状态相加，太粗暴，变化也太剧烈，容易把之前的状态覆盖掉。那么我们可不可以改变RNN这种粗暴的方式，把状态记住呢，这里就有了long term memory,有了存储这个向量的空间，同事我们训练的时候，从个里面拿出有用的memory和当前的memory构成short memory传输给输出层，或者下一层，如下图：<img src="http://colah.github.io/posts/2015-08-Understanding-LSTMs/img/LSTM3-chain.png" alt="LSTM结构图" />，需要注意的是图中的叉是point-wise点乘，不是点积。这里有4个参数运算要进行，从左边到右边，依次是
+    <ol>
+      <li>第一个参数运算<strong>Forget gate:</strong> <script type="math/tex">f_t = \sigma(W_f(h_{t-1},X_t)+bias)</script></li>
+      <li>第二，三个参数运算<strong>Input gate &amp; candidate memory:</strong> <script type="math/tex">f_i = \sigma(W_i(h_{t-1},X_t)+bias) * tanh(W_c(h_{t-1},X_t)+bias)</script></li>
+      <li>形成长期记忆<strong>Long term meory</strong>： <script type="math/tex">C_t = f_t + f_i</script></li>
+      <li>第四个参数运算<strong>Ouput Gate</strong>输出到下一层： <script type="math/tex">h_t = \sigma(W_o(h_{t-1},X_t)+bias) * tanh(C_t)</script></li>
+    </ol>
+  </li>
+</ul>
+
+<p>完整的模型分析就是这四步。可以通过链式求导推导出参数更新，和LR并无不同，比较繁琐具体的推导过程就不写了。</p>
+
+<h2 id="模型应用">模型应用</h2>
+<p>在机器学习中，只有2种任务，预测任务（分类，回归）、描述任务（聚类，关联模式，异常检测）。我们LSTM经常用来解决分类或者回归任务，常用的分类任务，比如情感分类，回归任务比如速度预测等，LSTM通过是作用底层的语义向量层，然后上面会级联分类模型（LR、softmax），或者回归模型（广义回归（LR））。模式都差不多，对于LSTM来说</p>
+
+<ul>
+  <li>如果最后用的是LSTM比如历史N个时刻的向量做Max pooling 或者mean pooling,一般这是分类任务。<img src="http://www.th7.cn/d/file/p/2016/02/15/36970b182f7ce34b223ac79443fafdb2.jpg" alt="分类图" /></li>
+  <li>如果最后用的是每个LSTM时刻的向量，通常这是序列标注任务。<img src="http://pic.w2bc.com/upload/201703/10/201703101724089047.jpg" alt="序列标注图" /> 这是就类似咱们通常说的<strong>Seq2Seq</strong>。</li>
+</ul>
+
+<h2 id="安装和源码">安装和源码</h2>
+<p>网上有很多相关的源码，很容易获取，这里我给个基本安装配置</p>
+
+<ol>
+  <li>版本兼容问题
+    <blockquote>
+      <pre>import keras 
+print keras.__version__
+import tensorflow
+print tensorflow.__version__
+</pre>
+      <p>我机器上的keras版本是2.0.4,tensorflow版本是1.1.0，注意keras默认的后端是TensorFlow，因为这个作者本来也是tensorflow的作者，所以当然用自己的东西啦，Theano目前来看已经式微了。版本一定使用最新的，不然会出现model.add()的时候报错哦。</p>
+    </blockquote>
+  </li>
+  <li>网络参数个数
+    <blockquote>
+      <p>代码中通过model.summay()可以看到参数数量的多少，我这里可以给大家算一下，这样基本就知道网络模型是个什么样子。这里有词汇库14322个，embedding层是256维度，那么embeddign参数是14322*256,LSTM层的参数是4次计算，每次有个偏置，还有连接层的参数，所以参数为256 * 128 + 128 * 129 = 197120.明白参数的个数对模型了解很重要。</p>
+      <pre>model = Sequential()
+model.add(Embedding(14322, 256, input_length=maxlen))
+model.add(LSTM(128))
+model.add(Dropout(0.5))
+model.add(Dense(1))
+model.add(Activation('sigmoid'))
+model.compile(loss='binary_crossentropy',
+optimizer='adam',
+metrics=['accuracy'])</pre>
+    </blockquote>
+  </li>
+</ol>
+
+<p>3.运算时间</p>
+<blockquote>
+  <p>目前15000个句子，词汇量是14322，batchsize为128，我机器比较弱，一次epoch大概需要3分钟，30次epoch训练完毕需要1个半小时。我没有GPU，所以比较慢了。</p>
+</blockquote>
+
+<p>源码见我的GITHUB：<a href="https://github.com/bobz653/machine-learning/tree/master/emotion_category_lstm">https://github.com/bobz653/machine-learning/tree/master/emotion_category_lstm</a></p>
+
+<p>PS： <strong>要指出的是网络上有篇传播很广的<a href="http://blog.csdn.net/Dark_Scope/article/details/47056361">博文</a>，里面提到了LSTM的结构，说的相当不清楚，大家不要去看。</strong></p>
+
+<h2 id="参考">参考</h2>
+<p>LSTM相关文章：</p>
+
+<ul>
+  <li><a href="http://www.jianshu.com/p/9dc9f41f0b29">http://www.jianshu.com/p/9dc9f41f0b29</a></li>
+  <li><a href="http://blog.echen.me/2017/05/30/exploring-lstms/">http://blog.echen.me/2017/05/30/exploring-lstms/</a></li>
+  <li><a href="http://kexue.fm/archives/3863/">http://kexue.fm/archives/3863/</a></li>
+  <li><a href="http://blog.csdn.net/malefactor/article/details/50725480">http://blog.csdn.net/malefactor/article/details/50725480</a></li>
+</ul>
+
+  </article>
+<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key=/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/2017/06/11/lstm-basic data-title=浅析RNN(LSTM)网络结构【附源码】 data-url=不创造，不知道//%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/2017/06/11/lstm-basic.html></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<!-- 多说公共JS代码 end -->
+</div>
+
+      </div>
+    </div>
+    
+    <footer class="footer">
+  <div id="gotop">^</div>
+  <br>
+	@2017 powered by jekyll.
+</footer>
+
+    
+  </body>
+
+</html>
