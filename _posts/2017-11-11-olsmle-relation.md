@@ -11,8 +11,8 @@ tags: [machine learning]
 
 ## 机器学习三要素
 * 模型：这里我们可以定义为非条件概率模型和条件概率模型
-  非条件概率： $$ F = \lbrace f|Y=f_\theta(X) \} $$
-  条件概率：$$ F = \{ P| P_\theta(Y|X),\theta \in R^n\} $$
+> 非条件概率： $$ F = \lbrace f|Y=f_\theta(X) \} $$ 对应我们的判别式模型，比如LR SVM RNN CRF MEMM等，由于这种模型的偏差较小，方差较大，适用于数据量大的情况
+  条件概率：$$ F = \{ P| P_\theta(Y|X),\theta \in R^n\} $$ 对应我们的产生式模型，比如 NB HMM等，这种模型偏差大，方差小适用于数据量较小的情况。
 * 目标
 * 算法
 
