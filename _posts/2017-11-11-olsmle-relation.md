@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "从最小二乘（OLS）和最大似然估计（MLE）的关系谈起"
+title: "从最大似然估计MLE推导最小二乘OLS谈机器学习三要素"
 description: "OLS MLE的关系"
 author: "张波"
 category: 机器学习
