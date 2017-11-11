@@ -11,7 +11,8 @@ tags: [machine learning]
 
 ## 机器学习三要素
 * 模型：这里我们可以定义为非条件概率模型和条件概率模型
-  非条件概率 $$ F = \lbrace f|Y=f_\theta(X) \} $$
+  非条件概率： $$ F = \lbrace f|Y=f_\theta(X) \} $$
+  条件概率：$$ F = \{ P| P_\theta(Y|X),\theta \in R^n\} $$
 * 目标
 * 算法
 
