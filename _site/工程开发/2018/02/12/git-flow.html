@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>    
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width initial-scale=1">
+
+  <title>从Git规范谈软件开发流程</title>
+  <meta name="description" content="一般软件产品从需求到正式上线分成这几个过程，需要RD、OPS、QA共同参与，如果有工具将三者有机的结合起来，提高开发效率，就是我们常说的DevOps。一般通过平台实现DevOps的半自动化，包含 需求，设计，编码，测试，部署，监控，反馈，然后迭代循环。快速迭代的内部产品，往往要求程序员具备从需求分析，编码自测到快...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E5%B7%A5%E7%A8%8B%E5%BC%80%E5%8F%91/2018/02/12/git-flow.html">
+  <link rel="alternate" type="application/atom+xml" title="探索发现好玩的东西" href="http://localhost:4000/feed.xml" />
+  <script src="/scripts/jquery-1.11.2.min.js"></script>
+  <script src="/scripts/pithy.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+</head>
+
+
+  <body>
+    <header class="header">
+	<div class="header-container">
+		<div class="nav">
+			
+				<li>
+					<a href="/index.html">首页</a>
+				</li>			
+			
+			
+				<li>
+					<a href="/archive.html">存档</a>
+				</li>			
+			
+			
+				<li>
+					<a href="/category.html">类别</a>
+				</li>			
+			
+			
+				<li>
+					<a href="/about.html">关于</a>
+				</li>			
+			
+		</div>
+		<div class="description"> 不创造，不知道 </div>		
+		<ul class="social-links">
+			<li>
+				<a href="https://github.com/bobz653" title="Github">
+					<img width="19px" height="19px" src="/images/github.png"/>
+				</a>
+			</li>
+			<li>
+				<a href="/feed.xml" title="RSS">
+					<img width="19px" height="19px" src="/images/rss.png"/>
+				</a>
+			</li>
+			<li>
+				<a href="http://www.weibo.com/bobz653" title="Weibo">
+					<img width="19px" height="19px" src="/images/twitter.png"/>
+				</a>
+			</li>
+		</ul>		
+	</div>
+</header>
+
+    <br>
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+  <br>
+  <header class="post-header">
+    <h1 class="post-title">从Git规范谈软件开发流程</h1>
+   
+ <p class="post-meta">Feb 12, 2018 • 张波
+
+
+</p>
+
+
+  </header>
+
+
+   <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<br/><br/>  
+<article class="post-content">
+    
+<p>一般软件产品从需求到正式上线分成这几个过程，需要RD、OPS、QA共同参与，如果有工具将三者有机的结合起来，提高开发效率，就是我们常说的DevOps。
+一般通过平台实现DevOps的半自动化，包含 需求，设计，编码，测试，部署，监控，反馈，然后迭代循环。
+快速迭代的内部产品，往往要求程序员具备从需求分析，编码自测到快速部署的能力，能够快速验证并迭代产品，据说这是Amazon要求程序员做的基本功。
+下面就几个关键步骤说一下我自己的理解，包括需求，编码，测试，部署这几个模块。</p>
+
+<h2 id="日常需求管理">日常需求管理</h2>
+<ul>
+  <li>所有的需求录入到devops需求平台，指定责任人，时间周期</li>
+  <li>自测完毕，意味着开发结束，转发指派给相关的使用方</li>
+  <li>需求可以由组长统一处理并指派.</li>
+  <li>需求尽量拆分为一些小的可跟踪，可排期的需求，一般不超过一周。</li>
+  <li>任务和需求的区别：任务是不需要测试和上线的，可以理解成一些日常的零碎活儿。</li>
+</ul>
+
+<h2 id="git开发规范和质量控制">GIT开发规范和质量控制</h2>
+<ol>
+  <li>
+    <p>Git-flow规范
+规范的多人协作有助于减少bug和系统风险，比如出现线上问题导致reset回滚。原则就是按照套路来，feature、release以及hotfix分支的正确合并让dev和master分支能有条不紊的迭代。对于小团队来说，原则上可以经过周知，每人自行合并review过feature分支到develop，但不可以合并到master分支上。master上必须是经过测试后的devleop代码。</p>
+  </li>
+  <li>
+    <p>常用的Git-flow分支模型规范
+<img src="https://upload-images.jianshu.io/upload_images/1226129-b2018af358d865d5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="Git-flow" /></p>
+    <h3 id="简要说明">简要说明</h3>
+  </li>
+</ol>
+<pre>
+develop分支是比较激进的开发分支，对应本地最新的从feature分支合并过来的开发代码。
+master分支是稳定的分支，对应生产环境代码，merge到master的时候请加上版本标签(git tag)，相当于线上环境的备份。
+feature分支是功能分支，从develop中来，向develop进行merge后删除feature分支
+release分支是提测分支，从develop中来，测试有问题的话，直接修改后，向develop和master同步，没有问题，则不用修改。同步后删除release分支
+hotfix分支是紧急修复分支，从master中来，向develop和master同步,然后删除hotfix
+请不要直接修改develop和master分支，大的功能点拉出自己的feature-XX分支进行操作，小的功能可以拉topic-XX分支
+常用操作
+合并分支feature_1合并到develop
+git checkout develop;
+git pull --rebase (有冲突，手动解决之）
+git merge --no-ff feature_1;(有冲突，手动解决之）
+git tag -a V0.0.2;
+git push --tags
+git branch -d feature_1
+git push origin :feature_1 删除远程分支，如果有的话
+</pre>
+<p>一系列常规操作命令参考<a href="https://www.cnblogs.com/cnblogsfans/p/5075073.html">文章</a></p>
+<ol>
+  <li>Git小知识点</li>
+</ol>
+
+<ul>
+  <li>Git 模型
+<img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014061202.jpg" alt="模型" />
+workspace可以理解成工作区，提交之后才到仓库，也就是GIT的指针树中。
+<a href="http://www.ruanyifeng.com/blog/2014/06/git_remote.html">来源</a></li>
+  <li>Git分支设计理念</li>
+</ul>
+<pre>
+可以想象GIT是一颗带有指针的树，节点是每次提交的Commit。树中有唯一的HEAD指针，同时有多个分支名指针。那么理解了这点，一个创建一个分支,只是在HEAD的指针位置添加一个分支指针而已。
+推荐使用 merge --no-ff，因为合并能够清晰的保留历史。
+rebase vs merge
+共同点：都是做分支的commits合并
+区别点：rebase会讲当前分支的改动作为path提交到目标分支的末尾，所以会变成一个序列，merge不会。
+操作要点：“在自己分支使用merge --no-ff 或者rebase 主分支，主分支使用merge --no-ff,以保存所有合并历史。”
+rebase一般在自己的分支上同步主分支使用，比如git pull , 然后使用git rebase master，不然自己埋头苦干，后来才发现合并到主分支一堆冲突。
+参考
+https://www.zhihu.com/question/36509119/answer/67828312
+http://www.jianshu.com/p/c17472d704a0
+rebase在公共分支上慎用，可能会导致公共分支变基，带来维护成本，推荐使用merge --no-ff模式，方便看出分支的来源，而不只为了看分支干净。
+图片来源 [Git sandbox]( https://learngitbranching.js.org/?nodemo)
+</pre>
+<ul>
+  <li>git-flow所有分支历史的查看工具sourcetree</li>
+</ul>
+
+<h2 id="codereview">codereview</h2>
+
+<p>一般使用gitlab配合phrabircator即可自动完成，在代码提交的时候进行强制codereview，有兴趣的同学可以查看facebook用的AK，也就是Phabricator.</p>
+
+<h2 id="部署">部署</h2>
+<p>不同的工程有不同的工具，这里就不统一介绍，但一般都包含线下环境和线上环境，支持一键部署。</p>
+
+
+  </article>
+<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key=/%E5%B7%A5%E7%A8%8B%E5%BC%80%E5%8F%91/2018/02/12/git-flow data-title=从Git规范谈软件开发流程 data-url=不创造，不知道//%E5%B7%A5%E7%A8%8B%E5%BC%80%E5%8F%91/2018/02/12/git-flow.html></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<!-- 多说公共JS代码 end -->
+</div>
+
+      </div>
+    </div>
+    
+    <footer class="footer">
+  <div id="gotop">^</div>
+  <br>
+	@2017 powered by jekyll.
+</footer>
+
+    
+  </body>
+
+</html>

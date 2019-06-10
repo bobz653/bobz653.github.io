@@ -6,9 +6,285 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 25 Jun 2017 17:47:43 +0800</pubDate>
-    <lastBuildDate>Sun, 25 Jun 2017 17:47:43 +0800</lastBuildDate>
+    <pubDate>Sat, 15 Sep 2018 10:36:42 +0800</pubDate>
+    <lastBuildDate>Sat, 15 Sep 2018 10:36:42 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>从Git规范谈软件开发流程</title>
+        <description>
+&lt;p&gt;一般软件产品从需求到正式上线分成这几个过程，需要RD、OPS、QA共同参与，如果有工具将三者有机的结合起来，提高开发效率，就是我们常说的DevOps。
+一般通过平台实现DevOps的半自动化，包含 需求，设计，编码，测试，部署，监控，反馈，然后迭代循环。
+快速迭代的内部产品，往往要求程序员具备从需求分析，编码自测到快速部署的能力，能够快速验证并迭代产品，据说这是Amazon要求程序员做的基本功。
+下面就几个关键步骤说一下我自己的理解，包括需求，编码，测试，部署这几个模块。&lt;/p&gt;
+
+&lt;h2 id=&quot;日常需求管理&quot;&gt;日常需求管理&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;所有的需求录入到devops需求平台，指定责任人，时间周期&lt;/li&gt;
+  &lt;li&gt;自测完毕，意味着开发结束，转发指派给相关的使用方&lt;/li&gt;
+  &lt;li&gt;需求可以由组长统一处理并指派.&lt;/li&gt;
+  &lt;li&gt;需求尽量拆分为一些小的可跟踪，可排期的需求，一般不超过一周。&lt;/li&gt;
+  &lt;li&gt;任务和需求的区别：任务是不需要测试和上线的，可以理解成一些日常的零碎活儿。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;git开发规范和质量控制&quot;&gt;GIT开发规范和质量控制&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Git-flow规范
+规范的多人协作有助于减少bug和系统风险，比如出现线上问题导致reset回滚。原则就是按照套路来，feature、release以及hotfix分支的正确合并让dev和master分支能有条不紊的迭代。对于小团队来说，原则上可以经过周知，每人自行合并review过feature分支到develop，但不可以合并到master分支上。master上必须是经过测试后的devleop代码。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;常用的Git-flow分支模型规范
+&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/1226129-b2018af358d865d5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700&quot; alt=&quot;Git-flow&quot; /&gt;&lt;/p&gt;
+    &lt;h3 id=&quot;简要说明&quot;&gt;简要说明&lt;/h3&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;
+develop分支是比较激进的开发分支，对应本地最新的从feature分支合并过来的开发代码。
+master分支是稳定的分支，对应生产环境代码，merge到master的时候请加上版本标签(git tag)，相当于线上环境的备份。
+feature分支是功能分支，从develop中来，向develop进行merge后删除feature分支
+release分支是提测分支，从develop中来，测试有问题的话，直接修改后，向develop和master同步，没有问题，则不用修改。同步后删除release分支
+hotfix分支是紧急修复分支，从master中来，向develop和master同步,然后删除hotfix
+请不要直接修改develop和master分支，大的功能点拉出自己的feature-XX分支进行操作，小的功能可以拉topic-XX分支
+常用操作
+合并分支feature_1合并到develop
+git checkout develop;
+git pull --rebase (有冲突，手动解决之）
+git merge --no-ff feature_1;(有冲突，手动解决之）
+git tag -a V0.0.2;
+git push --tags
+git branch -d feature_1
+git push origin :feature_1 删除远程分支，如果有的话
+&lt;/pre&gt;
+&lt;p&gt;一系列常规操作命令参考&lt;a href=&quot;https://www.cnblogs.com/cnblogsfans/p/5075073.html&quot;&gt;文章&lt;/a&gt;&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Git小知识点&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Git 模型
+&lt;img src=&quot;http://www.ruanyifeng.com/blogimg/asset/2014/bg2014061202.jpg&quot; alt=&quot;模型&quot; /&gt;
+workspace可以理解成工作区，提交之后才到仓库，也就是GIT的指针树中。
+&lt;a href=&quot;http://www.ruanyifeng.com/blog/2014/06/git_remote.html&quot;&gt;来源&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Git分支设计理念&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;
+可以想象GIT是一颗带有指针的树，节点是每次提交的Commit。树中有唯一的HEAD指针，同时有多个分支名指针。那么理解了这点，一个创建一个分支,只是在HEAD的指针位置添加一个分支指针而已。
+推荐使用 merge --no-ff，因为合并能够清晰的保留历史。
+rebase vs merge
+共同点：都是做分支的commits合并
+区别点：rebase会讲当前分支的改动作为path提交到目标分支的末尾，所以会变成一个序列，merge不会。
+操作要点：“在自己分支使用merge --no-ff 或者rebase 主分支，主分支使用merge --no-ff,以保存所有合并历史。”
+rebase一般在自己的分支上同步主分支使用，比如git pull , 然后使用git rebase master，不然自己埋头苦干，后来才发现合并到主分支一堆冲突。
+参考
+https://www.zhihu.com/question/36509119/answer/67828312
+http://www.jianshu.com/p/c17472d704a0
+rebase在公共分支上慎用，可能会导致公共分支变基，带来维护成本，推荐使用merge --no-ff模式，方便看出分支的来源，而不只为了看分支干净。
+图片来源 [Git sandbox]( https://learngitbranching.js.org/?nodemo)
+&lt;/pre&gt;
+&lt;ul&gt;
+  &lt;li&gt;git-flow所有分支历史的查看工具sourcetree&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;codereview&quot;&gt;codereview&lt;/h2&gt;
+
+&lt;p&gt;一般使用gitlab配合phrabircator即可自动完成，在代码提交的时候进行强制codereview，有兴趣的同学可以查看facebook用的AK，也就是Phabricator.&lt;/p&gt;
+
+&lt;h2 id=&quot;部署&quot;&gt;部署&lt;/h2&gt;
+&lt;p&gt;不同的工程有不同的工具，这里就不统一介绍，但一般都包含线下环境和线上环境，支持一键部署。&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 12 Feb 2018 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E5%B7%A5%E7%A8%8B%E5%BC%80%E5%8F%91/2018/02/12/git-flow.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E5%B7%A5%E7%A8%8B%E5%BC%80%E5%8F%91/2018/02/12/git-flow.html</guid>
+        
+        <category>Git</category>
+        
+        
+        <category>工程开发</category>
+        
+      </item>
+    
+      <item>
+        <title>从似然MLE推导最小二乘OLS谈机器学习三要素</title>
+        <description>&lt;p&gt;最近被人问到最大似然，最小二乘，梯度下降，我发现一不留神很容易搞不清楚概念：对于机器学习三要素的问题，定义目标和怎么用算法达到这个目标的事儿，这几个概念清楚了，就知道梯度下降和前两者是不同的。下午写篇博客来梳理记录一下：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;博客很久没有更新了，这段时间一直在琢磨工程项目上的事情，虽琐碎但比较充实。团队有关产研测的规范流转，使用devops类似的工具（具体内部工具就不说了）来去管理需求、开发、测试、上线部署、监控流程，实现进度和代码review等质量一系列的监管。开源的大家可以参考 &lt;strong&gt;Gitlab + Phabircator&lt;/strong&gt;. 开发规范可以参考&lt;strong&gt;Git-flow&lt;/strong&gt;。这不是本篇文章的重点，以后有时间可以详细说，&lt;/p&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;机器学习三要素&quot;&gt;机器学习三要素&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;模型：这里我们可以定义为非条件概率模型和条件概率模型，说的通俗一些就是常说的在从输入空间到输出空间的转化方式。&lt;/p&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;&lt;strong&gt;非条件概率&lt;/strong&gt;： &lt;script type=&quot;math/tex&quot;&gt;F=\{f\mid Y=f_\theta(X)\}&lt;/script&gt; 对应我们的判别式模型，比如LR SVM RNN CRF MEMM等，由于这种模型的偏差较小，方差较大，适用于数据量大的情况&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;条件概率&lt;/strong&gt;：&lt;script type=&quot;math/tex&quot;&gt;F = \{ P\mid P_\theta(Y\mid X),\theta \in R^n\}&lt;/script&gt; 对应我们的产生式模型，比如 NB HMM等，这种模型偏差大，方差小适用于数据量较小的情况。&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;怎么选择模型&lt;/strong&gt;：有人问怎么调和这些方差偏差，有一种套路，就是偏差大，欠拟合那就模型复杂化，多来点特征，多上几层。方差大那就是过拟合，那就多来点数据，来点正则，去掉一些不重要的特征，神经网络的话就加上dropout。&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;目标：定义什么样的损失函数来作为优化的目标,常用&lt;/p&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;&lt;strong&gt;最小二乘OLS也称为平方损失&lt;/strong&gt;：&lt;script type=&quot;math/tex&quot;&gt;L(Y,f(x)) = (Y-f(x))^2&lt;/script&gt;，常见模型比如线性回归&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;最大似然（取上对数就是对数似然）&lt;/strong&gt;：&lt;script type=&quot;math/tex&quot;&gt;L(P,P(Y\mid X)) = -log(P(Y\mid X))&lt;/script&gt; 常见模型比如LR，Softmax&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Hinge-Loss&lt;/strong&gt;: &lt;script type=&quot;math/tex&quot;&gt;max(0,1-Y*f_\theta(X))&lt;/script&gt; 常见模型比如SVM&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;指数&lt;/strong&gt;: &lt;script type=&quot;math/tex&quot;&gt;exp(Y*f_\theta(X))&lt;/script&gt;,常见的模型比如Adaboost，GBDT&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;0，1损失&lt;/strong&gt;：比如分类模型LR&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;算法&lt;/p&gt;
+    &lt;ol&gt;
+      &lt;li&gt;&lt;strong&gt;最小二乘估计&lt;/strong&gt;：对不同的参数求导=0，用方程直接求出参数，这种方式适合数据量比较小的情况。&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;BGD,SDG,MBGD&lt;/strong&gt;：适合数据量比较大的情况，使用梯度下降方式去逐渐逼近目标的最小值或者最大值。&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;条件概率极大似然推导到非条件最小二乘&quot;&gt;条件概率（极大似然）推导到非条件（最小二乘）&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;结论&lt;/p&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;两者是等价。也就是两者目标在服从正态分布的情况下是可以发现目标是一致的&lt;/li&gt;
+      &lt;li&gt;既然目标是一致的，那么算法也可以通过，也就是可用最小二乘估计来计算LR的似然目标，但一般不这么做。OLS不善于做0/1回归，目标值太小，毕竟不是普通的连续Y值的回归。&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;推理&lt;/p&gt;
+    &lt;ol&gt;
+      &lt;li&gt;最大似然：假设Y值服从正态分布 &lt;script type=&quot;math/tex&quot;&gt;Y_i \approx N(f(x_i),\sigma^2)&lt;/script&gt; 且是独立分布,写成似然函数，就是 &lt;script type=&quot;math/tex&quot;&gt;P(Y_i\mid X_i) \approx exp(Y_i - f(X_i))^2&lt;/script&gt; 我这里省略了正态分布的其他部分，公式在电脑上是在敲的费劲啊~&lt;/li&gt;
+      &lt;li&gt;由于概率独立分布，把所有Yi的概率相乘，取对数后求最大值，就会变成&lt;script type=&quot;math/tex&quot;&gt;min(\Sigma (Y_i - f(X_i))^2)&lt;/script&gt;&lt;/li&gt;
+      &lt;li&gt;怎么样，现在看着就是最小二乘的公式了吧&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;lr的似然函数和最小二乘的关系&quot;&gt;LR的似然函数和最小二乘的关系&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;怎么LR的推导不出来？不是正态分布嘛，当然推导不出来。
+    &lt;ol&gt;
+      &lt;li&gt;
+        &lt;p&gt;LR的似然 &lt;script type=&quot;math/tex&quot;&gt;P(Y_i\mid X_i) = h_\theta (x_i)^{Y_i} *  (1-h_\theta (x_i))^{(1-Y_i)}&lt;/script&gt; 同样可以取LOG后相加，就是所有概率的相乘啦。&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;LR的似然为啥和最小二乘那么不同呢，好像推导不出来，没有关系，我先声明了，Y要服从正态分布，可是LR的Y的0 1分布，很显然是bernoulli分布 &lt;script type=&quot;math/tex&quot;&gt;y \approx Bernoulli(\phi)&lt;/script&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;NG说，你看他们求导后，梯度怎么看着是一模一样的，哈哈，确实，但 &lt;script type=&quot;math/tex&quot;&gt;\theta_i -=（f(x^{(j)})-y^{(j)})x_i^{(j)}&lt;/script&gt; 中的f函数是不同的哈，LR中的是有sigmoid非线性变换的。&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;后记：对于算法，我自己写了一些模型的基础实现，方便更清楚给同学解释 LR，SVM，C4.5，NN，NB是怎么回事哈，待我整理好了再发，写一篇文章不留神3个小时过去了~~~啊啊啊&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.zhihu.com/question/24900876/answer/65176508&quot;&gt;最小二乘、极大似然、梯度下降有何区别？&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.csdn.net/xidianzhimeng/article/details/20847289&quot;&gt;最大似然估计和最小二乘估计的区别与联系&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+</description>
+        <pubDate>Sat, 11 Nov 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/2017/11/11/olsmle-relation.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/2017/11/11/olsmle-relation.html</guid>
+        
+        <category>machine learning</category>
+        
+        
+        <category>机器学习</category>
+        
+      </item>
+    
+      <item>
+        <title>大数据技术漫谈：数据一致性那点事儿</title>
+        <description>&lt;p&gt;AI时代公司要胜出，拼算法和数据。算法就那么些经典的可以挖掘，所以最宝贵的可能就是数据资源了，也就是前几年满大街的大数据思维。大数据有短时间过热的嫌疑，但从长远来看，未来是属于大数据的。最近零零碎碎的看了一些大数据相关资料，结合自己的理解，来谈谈大数据相关一些零星技术思考，本篇就从一致性技术谈起吧。写的有点杂乱，但还是分3点说明：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;一致性起源：设计原则CAP, BASE, ACID&lt;/li&gt;
+  &lt;li&gt;一致性保证：Paxos，锁&lt;/li&gt;
+  &lt;li&gt;相关小细节：死锁，回调，MR&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;下一篇开始将从体系结构分别说一下大数据系统的协调，通信，数据通道，存储，以及计算。&lt;/p&gt;
+
+&lt;h2 id=&quot;1一致性起源&quot;&gt;1.一致性起源&lt;/h2&gt;
+&lt;p&gt;随着需要处理的数据越来越大，我们需要多台机器并行处理。那么数据分布式和服务分布式就比较重要了。为了保证我们的服务和数据的可用性，大牛们设计了一些原则，最顶层的就是&lt;strong&gt;CAP(Consistency,Availability,Partition Tolerance)&lt;/strong&gt;,说白了就是要在保证网络分区（服务的部分机房断网导致该部分通信中断）的情况下在数据一致性和服务可用性做一定的取舍。当然单机服务不用考虑P了。
+在这样的框架有两种模式，一种是&lt;strong&gt;BASE(Bascialy available, Soft state, Eventually Consistency)&lt;/strong&gt;即为现在大部分强调可用性的分布式系统也就是保证P的情况下强调A，损失一部分C。另一种即为 &lt;strong&gt;ACID(Atomicity, Consistency, Isolation, Duration)&lt;/strong&gt;强调数据的完整一致，大部分的关系型数据库系统就是这么做的。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;数据分布式&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;在多台机器上分布的存储数据。这里的数据，工业上讲就是我们所说SQL或者NoSQL数据库。&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;SQL：常见的mysql,oracle,SQLserver等行存储数据库，扩展采用分库（不同结构数据）然后采用分表然后分区（相同结构数据），一旦采用这些技术后，势必导致表的查询或者连接麻烦，一般我们会有持久层中间件来实现这些技术负责路由找表如TDDL等。&lt;/li&gt;
+  &lt;li&gt;NoSQL：常见的HDFS+HIVE形成离线数据库或者HBASE,MongoDB在线数据库。采用列存储方式，特别适合大规模稀疏性数据。天生就适合分布式，因为没有索引也不支持事务，以文件的形式存在。&lt;/li&gt;
+  &lt;li&gt;优缺点：如果是那种全信息查询，比如profile之类的，使用行存储会比较好，如果是只取某一列信息，比如跟帖这类的且schema并不固定，使用列存储会比较好。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;程序分布式
+    &lt;ol&gt;
+      &lt;li&gt;大规模离线计算：使用hadoop+mapreduce实现多台机器并行计算，mapreduce通过计算map数量，partition数据决定reduce数量，当jobtracker在maptask任务后进行shuffle（sort+combine），然后缓行相关的reduce任务进行数据获取。&lt;/li&gt;
+      &lt;li&gt;大规模在线服务集群：kafka进行日志手机后，可以使用zookeeper来管理协条多台服务并发，而服务器与服务器之间通信可以使用消息队列，如MQ。具体细节不多说，大家可以参考张俊林的《大数据日知录》&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2一致性保证&quot;&gt;2.一致性保证&lt;/h2&gt;
+&lt;p&gt;一致性我们从第一天写程序对数据处理，就会有接触到。这里我们从2个方面考虑一致性&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;数据
+    &lt;ol&gt;
+      &lt;li&gt;单机存储角度：保证数据是一致的，如果是文件，只有一份，当然就是一致的。如果是数据库，就得保证每次操作是符合ACID，注意不是CURD（增删改查），Innodb采用事务方式（锁）来保证原子性（要么成功要么失败），一致性（比如整体的约束不变），隔离性（事务锁机制），持久化（不会无缘无故回滚Rollback）。注意这里只是说的Innodb（在autocommit=0的情况下适合大量插入更新），而不是myisam(适合大量select）。&lt;/li&gt;
+      &lt;li&gt;多机存储角度：SQL数据库则是主从配置多个备份,master负责写，slave负责读，master同步到slave。如果是文件nosql，则一般会有三处备份，其中一个是主备份。当主备份更新的时候，会通知其他备份更新。这里由于更新需要时间，所以不能保证强一致性。当然如果是大规模数据的话，会有哈希分片存储机制，如round-robin,一致性哈希技术来进行分布式存储。&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;程序
+    &lt;ol&gt;
+      &lt;li&gt;（进程线程）数据库一致性操作：前面提到数据库问题，也就是每一条SQL语句都会默认成事务，那么就会取得锁，原则上为了保证数据不出现死锁，应该避免长时间的事务操作。增删改查尽量使用主键索引。&lt;/li&gt;
+      &lt;li&gt;线程一致性操作：通常我们会使用synchornize来同步线程操作，线程对这个对象的操作前要先获得该对象的锁，如果synchornize()则默认是this，该对象，注意这里是排他锁X。如果要提高读写效率，可以使用Readlock和writelock。我们使用wait()进行对象锁的释放，notify（）完之后进行通知唤醒wait的线程重新开始竞争获取该对象的锁。。&lt;/li&gt;
+      &lt;li&gt;进程通信：RPC，有很多种RPC框架，比如thrift，PB，dubbo等，通信格式有pb，thrift，json，xml等，经过他人相关实验对比看来，使用Thrift的TCompactprotocol无论从传统的压缩比还是cpu占用都是最优的。传输同样的数据比json压缩50%，cpu占用也差不多这个量级。&lt;img src=&quot;http://my.csdn.net/uploads/201208/13/1344830247_7145.png&quot; alt=&quot;说明图&quot; /&gt; &lt;img src=&quot;http://my.csdn.net/uploads/201208/13/1344830263_3364.png&quot; alt=&quot;cpu&quot; /&gt; 参考&lt;a href=&quot;http://blog.csdn.net/m13321169565/article/details/7835957#0-tsina-1-87119-397232819ff9a47a7b7e80a40613cfe1&quot;&gt;http://blog.csdn.net/m13321169565/article/details/7835957#0-tsina-1-87119-397232819ff9a47a7b7e80a40613cfe1&lt;/a&gt;&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;3相关小细节&quot;&gt;3.相关小细节&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;死锁问题:之前做数据更新总是遇到死锁，简单来说就是对资源进行加锁，在没有释放锁的情况下继续申请锁（不管是两个线程申请同一个对象的锁，还是申请不同对象的锁）都有可能死锁。所以尽量用完就释放，不管是读锁还是写锁。&lt;/li&gt;
+  &lt;li&gt;通信机制：服务器端sockect-bind-listen-accept-fork-recv-send, 客户端socket-[bind]-connect-send-recv。这是通用的模式，当然很多语言会有自己的包封。&lt;/li&gt;
+  &lt;li&gt;回调消息:回调简单说来就是我让你做事，你做完了告诉我一声，怎么告诉我，我来定这个方案，这个方案就是回调函数。需要反馈的人负责实现，做事的你不用负责，只要知道就可以。同步就是等你做完事通知我之后我再做事，异步就是我接着做我的事不用等你通知我，你完事了告诉我就可以。是不是有点绕，哈哈，请参考我的源码&lt;a href=&quot;https://github.com/bobz653/programming/tree/master/callbackjava&quot;&gt;https://github.com/bobz653/programming/tree/master/callbackjava&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;MR:jobtracker下面有多个tasktracker(map,reduce),tasktracker只能运行在DataNode上。map阶段会执行sort-merge这些shuffle动作，减少磁盘IO，然后通知jobtracker已经完成，jobtracker会告知reducetask来取数据，reduce会从各个map节点拉去已经merge好的数据再次reduce合并，输出结果.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;4参考&quot;&gt;4.参考&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;死锁: &lt;a href=&quot;http://www.jb51.net/article/32651.htm&quot;&gt;http://www.jb51.net/article/32651.htm&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;MR: &lt;a href=&quot;http://blog.csdn.net/yczws1/article/details/19178265#0-tsina-1-2883-397232819ff9a47a7b7e80a40613cfe1&quot;&gt;http://blog.csdn.net/yczws1/article/details/19178265#0-tsina-1-2883-397232819ff9a47a7b7e80a40613cfe1&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;同步、异步回调：&lt;a href=&quot;http://www.cnblogs.com/puyangsky/p/5581051.html&quot;&gt;http://www.cnblogs.com/puyangsky/p/5581051.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Sat, 01 Jul 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E5%A4%A7%E6%95%B0%E6%8D%AE/2017/07/01/big-data-1.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E5%A4%A7%E6%95%B0%E6%8D%AE/2017/07/01/big-data-1.html</guid>
+        
+        <category>一致性 死锁 设计原则</category>
+        
+        
+        <category>大数据</category>
+        
+      </item>
     
       <item>
         <title>浅析RNN(LSTM)网络结构【附源码】</title>

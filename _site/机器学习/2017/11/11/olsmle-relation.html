@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>    
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width initial-scale=1">
+
+  <title>从似然MLE推导最小二乘OLS谈机器学习三要素</title>
+  <meta name="description" content="最近被人问到最大似然，最小二乘，梯度下降，我发现一不留神很容易搞不清楚概念：对于机器学习三要素的问题，定义目标和怎么用算法达到这个目标的事儿，这几个概念清楚了，就知道梯度下降和前两者是不同的。下午写篇博客来梳理记录一下：">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/2017/11/11/olsmle-relation.html">
+  <link rel="alternate" type="application/atom+xml" title="探索发现好玩的东西" href="http://localhost:4000/feed.xml" />
+  <script src="/scripts/jquery-1.11.2.min.js"></script>
+  <script src="/scripts/pithy.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+</head>
+
+
+  <body>
+    <header class="header">
+	<div class="header-container">
+		<div class="nav">
+			
+				<li>
+					<a href="/index.html">首页</a>
+				</li>			
+			
+			
+				<li>
+					<a href="/archive.html">存档</a>
+				</li>			
+			
+			
+				<li>
+					<a href="/category.html">类别</a>
+				</li>			
+			
+			
+				<li>
+					<a href="/about.html">关于</a>
+				</li>			
+			
+		</div>
+		<div class="description"> 不创造，不知道 </div>		
+		<ul class="social-links">
+			<li>
+				<a href="https://github.com/bobz653" title="Github">
+					<img width="19px" height="19px" src="/images/github.png"/>
+				</a>
+			</li>
+			<li>
+				<a href="/feed.xml" title="RSS">
+					<img width="19px" height="19px" src="/images/rss.png"/>
+				</a>
+			</li>
+			<li>
+				<a href="http://www.weibo.com/bobz653" title="Weibo">
+					<img width="19px" height="19px" src="/images/twitter.png"/>
+				</a>
+			</li>
+		</ul>		
+	</div>
+</header>
+
+    <br>
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+  <br>
+  <header class="post-header">
+    <h1 class="post-title">从似然MLE推导最小二乘OLS谈机器学习三要素</h1>
+   
+ <p class="post-meta">Nov 11, 2017 • 张波
+
+
+</p>
+
+
+  </header>
+
+
+   <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<br/><br/>  
+<article class="post-content">
+    <p>最近被人问到最大似然，最小二乘，梯度下降，我发现一不留神很容易搞不清楚概念：对于机器学习三要素的问题，定义目标和怎么用算法达到这个目标的事儿，这几个概念清楚了，就知道梯度下降和前两者是不同的。下午写篇博客来梳理记录一下：</p>
+
+<blockquote>
+  <p>博客很久没有更新了，这段时间一直在琢磨工程项目上的事情，虽琐碎但比较充实。团队有关产研测的规范流转，使用devops类似的工具（具体内部工具就不说了）来去管理需求、开发、测试、上线部署、监控流程，实现进度和代码review等质量一系列的监管。开源的大家可以参考 <strong>Gitlab + Phabircator</strong>. 开发规范可以参考<strong>Git-flow</strong>。这不是本篇文章的重点，以后有时间可以详细说，</p>
+
+</blockquote>
+
+<h2 id="机器学习三要素">机器学习三要素</h2>
+<ul>
+  <li>
+    <p>模型：这里我们可以定义为非条件概率模型和条件概率模型，说的通俗一些就是常说的在从输入空间到输出空间的转化方式。</p>
+
+    <ol>
+      <li><strong>非条件概率</strong>： <script type="math/tex">F=\{f\mid Y=f_\theta(X)\}</script> 对应我们的判别式模型，比如LR SVM RNN CRF MEMM等，由于这种模型的偏差较小，方差较大，适用于数据量大的情况</li>
+      <li><strong>条件概率</strong>：<script type="math/tex">F = \{ P\mid P_\theta(Y\mid X),\theta \in R^n\}</script> 对应我们的产生式模型，比如 NB HMM等，这种模型偏差大，方差小适用于数据量较小的情况。</li>
+      <li><strong>怎么选择模型</strong>：有人问怎么调和这些方差偏差，有一种套路，就是偏差大，欠拟合那就模型复杂化，多来点特征，多上几层。方差大那就是过拟合，那就多来点数据，来点正则，去掉一些不重要的特征，神经网络的话就加上dropout。</li>
+    </ol>
+  </li>
+  <li>
+    <p>目标：定义什么样的损失函数来作为优化的目标,常用</p>
+
+    <ol>
+      <li><strong>最小二乘OLS也称为平方损失</strong>：<script type="math/tex">L(Y,f(x)) = (Y-f(x))^2</script>，常见模型比如线性回归</li>
+      <li><strong>最大似然（取上对数就是对数似然）</strong>：<script type="math/tex">L(P,P(Y\mid X)) = -log(P(Y\mid X))</script> 常见模型比如LR，Softmax</li>
+      <li><strong>Hinge-Loss</strong>: <script type="math/tex">max(0,1-Y*f_\theta(X))</script> 常见模型比如SVM</li>
+      <li><strong>指数</strong>: <script type="math/tex">exp(Y*f_\theta(X))</script>,常见的模型比如Adaboost，GBDT</li>
+      <li><strong>0，1损失</strong>：比如分类模型LR</li>
+    </ol>
+  </li>
+  <li>
+    <p>算法</p>
+    <ol>
+      <li><strong>最小二乘估计</strong>：对不同的参数求导=0，用方程直接求出参数，这种方式适合数据量比较小的情况。</li>
+      <li><strong>BGD,SDG,MBGD</strong>：适合数据量比较大的情况，使用梯度下降方式去逐渐逼近目标的最小值或者最大值。</li>
+    </ol>
+  </li>
+</ul>
+
+<h2 id="条件概率极大似然推导到非条件最小二乘">条件概率（极大似然）推导到非条件（最小二乘）</h2>
+<ul>
+  <li>
+    <p>结论</p>
+
+    <ol>
+      <li>两者是等价。也就是两者目标在服从正态分布的情况下是可以发现目标是一致的</li>
+      <li>既然目标是一致的，那么算法也可以通过，也就是可用最小二乘估计来计算LR的似然目标，但一般不这么做。OLS不善于做0/1回归，目标值太小，毕竟不是普通的连续Y值的回归。</li>
+    </ol>
+  </li>
+  <li>
+    <p>推理</p>
+    <ol>
+      <li>最大似然：假设Y值服从正态分布 <script type="math/tex">Y_i \approx N(f(x_i),\sigma^2)</script> 且是独立分布,写成似然函数，就是 <script type="math/tex">P(Y_i\mid X_i) \approx exp(Y_i - f(X_i))^2</script> 我这里省略了正态分布的其他部分，公式在电脑上是在敲的费劲啊~</li>
+      <li>由于概率独立分布，把所有Yi的概率相乘，取对数后求最大值，就会变成<script type="math/tex">min(\Sigma (Y_i - f(X_i))^2)</script></li>
+      <li>怎么样，现在看着就是最小二乘的公式了吧</li>
+    </ol>
+  </li>
+</ul>
+
+<h2 id="lr的似然函数和最小二乘的关系">LR的似然函数和最小二乘的关系</h2>
+
+<ul>
+  <li>怎么LR的推导不出来？不是正态分布嘛，当然推导不出来。
+    <ol>
+      <li>
+        <p>LR的似然 <script type="math/tex">P(Y_i\mid X_i) = h_\theta (x_i)^{Y_i} *  (1-h_\theta (x_i))^{(1-Y_i)}</script> 同样可以取LOG后相加，就是所有概率的相乘啦。</p>
+      </li>
+      <li>
+        <p>LR的似然为啥和最小二乘那么不同呢，好像推导不出来，没有关系，我先声明了，Y要服从正态分布，可是LR的Y的0 1分布，很显然是bernoulli分布 <script type="math/tex">y \approx Bernoulli(\phi)</script></p>
+      </li>
+      <li>
+        <p>NG说，你看他们求导后，梯度怎么看着是一模一样的，哈哈，确实，但 <script type="math/tex">\theta_i -=（f(x^{(j)})-y^{(j)})x_i^{(j)}</script> 中的f函数是不同的哈，LR中的是有sigmoid非线性变换的。</p>
+      </li>
+    </ol>
+  </li>
+</ul>
+
+<blockquote>
+  <p>后记：对于算法，我自己写了一些模型的基础实现，方便更清楚给同学解释 LR，SVM，C4.5，NN，NB是怎么回事哈，待我整理好了再发，写一篇文章不留神3个小时过去了~~~啊啊啊</p>
+</blockquote>
+
+<h2 id="参考">参考</h2>
+<ol>
+  <li><a href="https://www.zhihu.com/question/24900876/answer/65176508">最小二乘、极大似然、梯度下降有何区别？</a></li>
+  <li><a href="http://blog.csdn.net/xidianzhimeng/article/details/20847289">最大似然估计和最小二乘估计的区别与联系</a></li>
+</ol>
+
+
+  </article>
+<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key=/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/2017/11/11/olsmle-relation data-title=从似然MLE推导最小二乘OLS谈机器学习三要素 data-url=不创造，不知道//%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/2017/11/11/olsmle-relation.html></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<!-- 多说公共JS代码 end -->
+</div>
+
+      </div>
+    </div>
+    
+    <footer class="footer">
+  <div id="gotop">^</div>
+  <br>
+	@2017 powered by jekyll.
+</footer>
+
+    
+  </body>
+
+</html>
